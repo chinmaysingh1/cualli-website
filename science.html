@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cualli | The Science</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html"><img src="./assets/cualli_logo.webp" alt="Cualli Logo" class="logo"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="science.html" class="active">Science</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <header class="section text-center reveal active" style="padding-top: 160px; padding-bottom: 60px;">
+        <h1 style="font-size: clamp(3rem, 6vw, 4.5rem); margin-bottom: 20px;">Precision <br><span class="gradient-text">Synthetic Biology.</span></h1>
+        <p style="margin: 0 auto; max-width: 800px; font-size: 1.2rem;">
+            Our technology represents a paradigm shift in preventative therapeutics. By engineering stable modifications into trusted bacterial chassis, we create living biosensors and filters.
+        </p>
+    </header>
+
+    <section class="section reveal" style="padding-top: 0;">
+        <div class="card" style="margin-bottom: 40px;">
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">The Chassis: EcN 1917</h2>
+            <p style="margin-bottom: 15px;">We utilize the extensively studied and FDA-recognized safe probiotic strain <em>Escherichia coli</em> Nissle 1917 (EcN). Unlike traditional probiotics that merely compete for resources in the gut flora, our modified EcN is designed with a highly specific mechanical purpose.</p>
+            <p>Because bacterial uptake of perfluoroalkyl substances is primarily transporter-mediated, EcN serves as an ideal biological chassis. It is natively capable of surviving the harsh gastric environment and colonizing the GI tract long enough to perform its filtration duties before being naturally passed.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px;">
+            <div class="card">
+                <div style="font-size: 2.5rem; margin-bottom: 20px;">🧬</div>
+                <h3>TolC-AcrB System Disruption</h3>
+                <p>Wild-type bacteria possess natural waste disposal mechanisms, primarily the TolC-AcrB efflux pump system, which would normally eject absorbed PFAS back into the gut. To counter this, we engineered a stable AcrB knockout via recA-mediated recombination, permanently disabling this specific efflux system.</p>
+            </div>
+
+            <div class="card">
+                <div style="font-size: 2.5rem; margin-bottom: 20px;">💧</div>
+                <h3>Intracellular Sequestration</h3>
+                <p>With the AcrB pump disabled, the EcN bacteria acts as an intracellular sponge. As it passes through the GI tract, it ingests PFOA and PFOS compounds and traps them within the cell membrane. The toxins are then safely excreted from the body within the bacterial host, bypassing systemic absorption.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 Cualli, LLC. All rights reserved.</p></footer>
+    
+    <script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                if (reveals[i].getBoundingClientRect().top < window.innerHeight - 100) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+    </script>
+</body>
+</html>

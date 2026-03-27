@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cualli | Next-Gen Therapeutics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html"><img src="./assets/cualli_logo.webp" alt="Cualli Logo" class="logo"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="science.html">Science</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <header class="section text-center reveal active" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+        <h1 style="font-size: clamp(3.5rem, 8vw, 6.5rem); line-height: 1.05; margin-bottom: 20px;">
+            Filter the <span class="gradient-text">Forever.</span>
+        </h1>
+        <p style="margin: 0 auto 40px; max-width: 700px; font-size: 1.25rem;">
+            Perfluoroalkyl substances (PFAS) are accumulating in our bodies. Cualli has engineered the first autonomous probiotic designed to actively sequester environmental toxins in your gut before they enter your bloodstream.
+        </p>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <a href="science.html" class="btn btn-accent">Explore the Mechanism</a>
+        </div>
+    </header>
+
+    <section class="section reveal text-center">
+        <h2 style="font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 60px;">A New Standard of Defense.</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
+            <div class="card">
+                <h3>Targeted Capture</h3>
+                <p>Engineered to specifically bind to PFAS compounds within the gastrointestinal tract with high affinity.</p>
+            </div>
+            <div class="card">
+                <h3>Systemic Reduction</h3>
+                <p>By capturing toxins early, we drastically reduce the absorption rate into the human circulatory system.</p>
+            </div>
+            <div class="card">
+                <h3>Daily Efficacy</h3>
+                <p>A simple, non-invasive oral therapeutic that seamlessly integrates into your daily health routine.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 Cualli, LLC. All rights reserved.</p></footer>
+
+    <script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                if (reveals[i].getBoundingClientRect().top < windowHeight - 100) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+    </script>
+</body>
+</html>

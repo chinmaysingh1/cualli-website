@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cualli | About Us</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <div class="logo-container">
+            <a href="index.html"><img src="./assets/cualli_logo.webp" alt="Cualli Logo" class="logo"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="science.html">Science</a>
+            <a href="about.html" class="active">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <header class="section text-center reveal active" style="padding-top: 160px; padding-bottom: 40px;">
+        <h1 style="font-size: clamp(3rem, 6vw, 4.5rem); margin-bottom: 20px;">Driven by <span class="gradient-text">Innovation.</span></h1>
+        <p style="margin: 0 auto; max-width: 800px; font-size: 1.2rem;">
+            We are a multidisciplinary team of biomedical engineers, software developers, and hardware specialists bridging the gap between synthetic biology and daily consumer health.
+        </p>
+    </header>
+
+    <section class="section reveal" style="padding-top: 20px;">
+        <h2 class="text-center" style="font-size: 2.5rem;">The Founders</h2>
+        <div class="founder-grid">
+            
+            <div class="founder-card">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60" alt="Chinmay Singh" class="founder-img">
+                <div class="founder-info">
+                    <h4>Osvaldo Linares-Gutierrez</h4>
+                    <p>Co-Founder & CEO</p>
+                </div>
+            </div>
+
+            <div class="founder-card">
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60" alt="Samanyu Dixit" class="founder-img">
+                <div class="founder-info">
+                    <h4>Moiz Chomelawala</h4>
+                    <p>Co-Founder & CFO</p>
+                </div>
+            </div>
+
+            <div class="founder-card">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60" alt="Sahaj Sapovadia" class="founder-img">
+                <div class="founder-info">
+                    <h4>Chinmay Singh</h4>
+                    <p>Co-Founder & Co-CTO</p>
+                </div>
+            </div>
+
+            <div class="founder-card">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&auto=format&fit=crop&q=60" alt="Jayvik Joshi" class="founder-img">
+                <div class="founder-info">
+                    <h4>Alex Li</h4>
+                    <p>Co-Founder & Co-CTO</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 Cualli, LLC. All rights reserved.</p></footer>
+
+    <script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                if (reveals[i].getBoundingClientRect().top < window.innerHeight - 100) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+    </script>
+</body>
+</html>
