@@ -7,83 +7,59 @@ module.exports = {
   theme: {
     extend: {
       // ---- Design tokens ------------------------------------------------
+      // Warm, light, clinical-but-approachable palette.
       colors: {
-        abyss: {
-          900: "#000000", // pure abyssal black
-          800: "#040406",
-          700: "#0A0A0C", // ultra-dark charcoal
-          600: "#101014",
+        // Soft warm off-white canvas
+        canvas: "#FAFAF8",
+        // Terracotta / clay — the primary warm accent
+        clay: {
+          50: "#FBF6F1",
+          100: "#F5E7DA",
+          200: "#EACBB0",
+          300: "#DDA982",
+          400: "#CE8757",
+          500: "#C06E3B",
+          600: "#A65A2E",
+          700: "#874827",
+          800: "#6E3B22",
+          900: "#5B321F",
         },
-        bio: {
-          cyan: "#22E1D6", // bioluminescent cyan
-          aqua: "#34D6FF",
-          emerald: "#2BF5A0", // bioluminescent emerald
-          deep: "#0E7C7B",
+        // Sage / moss — the secondary earthy accent (signals biology + safety)
+        sage: {
+          50: "#F4F6F1",
+          100: "#E5EADD",
+          200: "#C9D4BC",
+          300: "#A7B894",
+          400: "#879B70",
+          500: "#6E8257",
+          600: "#586A45",
+          700: "#475636",
+          800: "#3A452D",
+          900: "#303A26",
         },
       },
       fontFamily: {
         // Wired up by next/font in app/layout.js via the --font-sans variable.
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
-      // ---- Liquid-glass blur scale -------------------------------------
-      backdropBlur: {
-        xs: "2px",
-        glass: "28px",
-        heavy: "48px",
-      },
       borderRadius: {
         "4xl": "2rem",
         "5xl": "2.75rem",
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(255,255,255,0.05), 0 0 40px -8px rgba(34,225,214,0.35)",
-        "glow-lg":
-          "0 0 0 1px rgba(255,255,255,0.06), 0 20px 80px -20px rgba(43,245,160,0.35), 0 0 60px -10px rgba(34,225,214,0.35)",
-        "inner-glass": "inset 0 1px 0 0 rgba(255,255,255,0.08)",
+        // Soft, neutral elevation for clean white surfaces.
+        card: "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -16px rgba(15,23,42,0.12)",
+        "card-hover":
+          "0 2px 4px rgba(15,23,42,0.05), 0 16px 40px -20px rgba(15,23,42,0.18)",
       },
-      // ---- Gradient meshes ---------------------------------------------
-      backgroundImage: {
-        "bio-gradient":
-          "linear-gradient(120deg, #22E1D6 0%, #34D6FF 45%, #2BF5A0 100%)",
-        "glass-sheen":
-          "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 100%)",
-        "mesh-cyan":
-          "radial-gradient(closest-side, rgba(34,225,214,0.55), rgba(34,225,214,0))",
-        "mesh-emerald":
-          "radial-gradient(closest-side, rgba(43,245,160,0.45), rgba(43,245,160,0))",
-        "mesh-aqua":
-          "radial-gradient(closest-side, rgba(52,214,255,0.40), rgba(52,214,255,0))",
-      },
-      // ---- Motion -------------------------------------------------------
       keyframes: {
-        "drift-a": {
-          "0%, 100%": { transform: "translate3d(0,0,0) scale(1)" },
-          "33%": { transform: "translate3d(6vw,-4vh,0) scale(1.15)" },
-          "66%": { transform: "translate3d(-4vw,5vh,0) scale(0.95)" },
-        },
-        "drift-b": {
-          "0%, 100%": { transform: "translate3d(0,0,0) scale(1.05)" },
-          "50%": { transform: "translate3d(-7vw,6vh,0) scale(1.2)" },
-        },
-        "drift-c": {
-          "0%, 100%": { transform: "translate3d(0,0,0) scale(0.9)" },
-          "50%": { transform: "translate3d(5vw,-6vh,0) scale(1.1)" },
-        },
-        "gradient-pan": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-        },
-        "pulse-glow": {
-          "0%, 100%": { opacity: "0.6" },
-          "50%": { opacity: "1" },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "drift-a": "drift-a 26s ease-in-out infinite",
-        "drift-b": "drift-b 32s ease-in-out infinite",
-        "drift-c": "drift-c 38s ease-in-out infinite",
-        "gradient-pan": "gradient-pan 8s ease infinite",
-        "pulse-glow": "pulse-glow 5s ease-in-out infinite",
+        "fade-up": "fade-up 0.5s ease-out both",
       },
     },
   },

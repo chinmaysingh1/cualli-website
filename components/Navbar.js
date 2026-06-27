@@ -2,36 +2,51 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/science", label: "Science" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "#vision", label: "Vision" },
+  { href: "#problem", label: "Problem" },
+  { href: "#solution", label: "Solution" },
+  { href: "#mechanism", label: "Mechanism" },
+  { href: "#market", label: "Market" },
+  { href: "#team", label: "Team" },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("vision");
 
-  const isActive = (href) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  // Scroll-spy: highlight the tab for whichever section is in view.
+  useEffect(() => {
+    const ids = LINKS.map((l) => l.href.slice(1));
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <motion.header
-      initial={{ y: -24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-x-0 top-4 z-50 flex justify-center px-4 sm:top-6"
-    >
-      <nav className="glass-strong flex w-full max-w-3xl items-center justify-between rounded-full py-2 pl-3 pr-2 sm:pl-5">
+    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/90 shadow-sm backdrop-blur-sm">
+      <nav
+        aria-label="Primary"
+        className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6"
+      >
         {/* Logo */}
         <Link
-          href="/"
-          className="flex items-center gap-2 rounded-full px-1 py-1 transition-opacity hover:opacity-80"
+          href="#vision"
+          className="flex items-center gap-2 transition-opacity hover:opacity-80"
           aria-label="Cualli home"
         >
           <Image
@@ -45,78 +60,69 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <ul className="hidden items-center gap-1 sm:flex">
-          {LINKS.map((link) => (
-            <li key={link.href} className="relative">
-              <Link
-                href={link.href}
-                className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive(link.href)
-                    ? "text-white"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {isActive(link.href) && (
-                  <motion.span
-                    layoutId="nav-pill"
-                    className="absolute inset-0 -z-10 rounded-full border border-white/10 bg-white/10"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                {link.label}
-              </Link>
-            </li>
-          ))}
+        <ul className="hidden items-center gap-1 md:flex">
+          {LINKS.map((link) => {
+            const isActive = active === link.href.slice(1);
+            return (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  aria-label={`Jump to ${link.label} section`}
+                  aria-current={isActive ? "true" : undefined}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-clay-50 text-clay-700"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Mobile toggle */}
         <button
           onClick={() => setOpen((o) => !o)}
-          className="glass flex h-10 w-10 items-center justify-center rounded-full sm:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-700 md:hidden"
           aria-label="Toggle navigation menu"
           aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           <div className="flex flex-col gap-[5px]">
             <span
-              className={`h-[2px] w-4 bg-white transition-transform ${open ? "translate-y-[7px] rotate-45" : ""}`}
+              className={`h-[2px] w-4 bg-slate-700 transition-transform ${open ? "translate-y-[7px] rotate-45" : ""}`}
             />
             <span
-              className={`h-[2px] w-4 bg-white transition-opacity ${open ? "opacity-0" : ""}`}
+              className={`h-[2px] w-4 bg-slate-700 transition-opacity ${open ? "opacity-0" : ""}`}
             />
             <span
-              className={`h-[2px] w-4 bg-white transition-transform ${open ? "-translate-y-[7px] -rotate-45" : ""}`}
+              className={`h-[2px] w-4 bg-slate-700 transition-transform ${open ? "-translate-y-[7px] -rotate-45" : ""}`}
             />
           </div>
         </button>
       </nav>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-            className="glass-strong absolute top-[68px] w-[calc(100%-2rem)] max-w-3xl overflow-hidden rounded-3xl p-2 sm:hidden"
-          >
-            {LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`block rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
-                  isActive(link.href)
-                    ? "bg-white/10 text-white"
-                    : "text-gray-300 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+      {open && (
+        <div
+          id="mobile-menu"
+          className="border-t border-slate-100 bg-white px-4 pb-4 pt-2 md:hidden"
+        >
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              aria-label={`Jump to ${link.label} section`}
+              className="block rounded-lg px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </header>
   );
 }

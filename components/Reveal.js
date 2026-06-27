@@ -2,12 +2,12 @@
 
 import { motion } from "framer-motion";
 
-// Scroll-triggered reveal. Fades + lifts content into view once, when it
-// enters the viewport. `delay` lets callers stagger sibling elements.
+// Scroll-triggered reveal. A quick, subtle fade-up as content enters view.
+// `delay` lets callers gently stagger sibling elements.
 export default function Reveal({
   children,
   delay = 0,
-  y = 24,
+  y = 10,
   className = "",
   as = "div",
 }) {
@@ -17,8 +17,8 @@ export default function Reveal({
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
       {children}
     </MotionTag>
