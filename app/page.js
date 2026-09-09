@@ -8,7 +8,6 @@ import CTAButton from "@/components/CTAButton";
 // (the blur placeholder works even with static export / unoptimized images) and
 // bake in intrinsic width/height to prevent layout shift (CLS).
 import osvaldoImg from "@/public/team/osvaldo.webp";
-import moizImg from "@/public/team/moiz.webp";
 import chinmayImg from "@/public/team/chinmay.webp";
 import alexImg from "@/public/team/alex.webp";
 
@@ -27,24 +26,6 @@ const PROBLEM_STATS = [
     value: "Persistent",
     label:
       "PFAS resist breakdown, accumulating in the body and water supply for decades",
-  },
-];
-
-const MECHANISM_STEPS = [
-  {
-    step: "01",
-    title: "Colonize",
-    body: "We use Escherichia coli Nissle 1917 (EcN) — an extensively studied, FDA-recognized safe probiotic strain — to safely and temporarily colonize the gut.",
-  },
-  {
-    step: "02",
-    title: "Capture",
-    body: "By inactivating the AcrB efflux pump, the bacteria stop expelling PFAS and instead retain it — capturing forever chemicals directly inside the cell.",
-  },
-  {
-    step: "03",
-    title: "Clear",
-    body: "The PFAS-laden probiotic is removed from the body through normal fecal elimination, lowering the total body burden with no invasive procedure.",
   },
 ];
 
@@ -68,7 +49,6 @@ const ROADMAP = [
 
 const FOUNDERS = [
   { name: "Osvaldo Linares Gutiérrez", role: "Co-Founder", img: osvaldoImg },
-  { name: "Moiz Chomelawala", role: "Co-Founder", img: moizImg },
   { name: "Chinmay Singh", role: "Co-Founder", img: chinmayImg },
   { name: "Jinghan (Alex) Li", role: "Co-Founder", img: alexImg },
 ];
@@ -95,8 +75,8 @@ export default function HomePage() {
           delay={0.06}
           className="mx-auto mt-7 max-w-4xl text-balance text-5xl font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-6xl md:text-7xl"
         >
-          The next generation of{" "}
-          <span className="text-clay-600">programmable medicine.</span>
+          Filter the{" "}
+          <span className="text-clay-600">Forever.</span>
         </Reveal>
 
         <Reveal
@@ -111,7 +91,7 @@ export default function HomePage() {
 
         <Reveal delay={0.18}>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <CTAButton href="#mechanism">See How It Works</CTAButton>
+            <CTAButton href="#solution">See How It Works</CTAButton>
             <CTAButton href="#market" variant="secondary">
               Partner With Us
             </CTAButton>
@@ -206,59 +186,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============================ MECHANISM ========================= */}
-      <section id="mechanism" className="px-4 py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center">
-            <Reveal>
-              <span className="eyebrow">The Mechanism</span>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <h2 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-                Three steps: Colonize, Capture, Clear.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
-                Built on trusted biology and a single precise edit, the
-                mechanism is engineered to be safe, specific, and effective.
-              </p>
-            </Reveal>
-          </div>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {MECHANISM_STEPS.map((step, i) => (
-              <Reveal key={step.title} delay={0.08 * i}>
-                <GlassCard className="h-full">
-                  <span className="text-sm font-semibold tracking-[0.18em] text-sage-600">
-                    {step.step}
-                  </span>
-                  <h3 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">
-                    {step.title}
-                  </h3>
-                  <p className="mt-3 leading-relaxed text-slate-600">
-                    {step.body}
-                  </p>
-                </GlassCard>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.1}>
-            <div className="mt-8 rounded-xl border border-slate-100 bg-white p-6 text-center shadow-card sm:p-8">
-              <p className="text-base leading-relaxed text-slate-600">
-                <span className="font-semibold text-slate-900">
-                  Why EcN 1917?
-                </span>{" "}
-                E. coli Nissle 1917 natively survives the gastric environment
-                and has a long, well-documented safety record — making it an
-                ideal chassis for programmable, internal remediation.
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       {/* ============================ MARKET & ROADMAP =================== */}
       <section id="market" className="px-4 py-20 sm:py-28">
         <div className="mx-auto max-w-6xl">
@@ -318,7 +245,7 @@ export default function HomePage() {
             </Reveal>
           </div>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-14 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {FOUNDERS.map((f, i) => (
               <Reveal key={f.name} delay={0.06 * i}>
                 <article className="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-card transition-shadow duration-300 hover:shadow-card-hover">
