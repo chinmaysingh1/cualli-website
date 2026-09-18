@@ -44,6 +44,11 @@ const nextConfig = {
   // the full header set here applies when the site runs on Vercel / `next start`
   // (and is mirrored in vercel.json).
   output: "export",
+  // Run page generation in-process instead of in a forked worker pool. Without
+  // this, `next build` compiles fine and then hangs forever at "Collecting page
+  // data" on macOS + current Node builds (the jest-worker children never report
+  // back). Costs nothing measurable here — this site has four static routes.
+  experimental: { cpus: 1, workerThreads: false },
   trailingSlash: true,
   poweredByHeader: false,
   images: {

@@ -4,36 +4,46 @@
 
 @layer base {
   :root {
-    color-scheme: light;
+    color-scheme: dark;
+
+    /* Accent channel. Exposed as variables (rather than only as Tailwind
+       colors) so inline SVG fills and the box-shadow glow tokens in
+       tailwind.config.js can both reference the same value. */
+    --ac: #86e8a8;
+    --acw: #c06e3b;
   }
 
   html {
     scroll-behavior: smooth;
-    /* Offset anchored sections so the sticky header doesn't cover headings */
-    scroll-padding-top: 5rem;
+    background: theme("colors.ink.950");
   }
 
   body {
-    @apply bg-canvas text-slate-900 antialiased;
+    @apply bg-ink-950 font-sans text-mist-50 antialiased;
     min-height: 100vh;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
-  ::selection {
-    background: rgba(192, 110, 59, 0.18);
-    color: #0f172a;
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 
-  /* Keyboard focus ring that matches the warm accent palette */
+  ::selection {
+    background: var(--ac);
+    color: theme("colors.ink.950");
+  }
+
+  /* Keyboard focus ring in the accent colour */
   :focus-visible {
-    outline: 2px solid rgba(192, 110, 59, 0.6);
+    outline: 2px solid var(--ac);
     outline-offset: 3px;
     border-radius: 4px;
   }
 
-  /* Quiet, neutral scrollbar */
+  /* Quiet scrollbar tuned for the dark canvas */
   ::-webkit-scrollbar {
     width: 10px;
   }
@@ -41,21 +51,199 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.3);
+    background: rgba(234, 239, 236, 0.16);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 116, 139, 0.5);
+    background: rgba(234, 239, 236, 0.3);
     background-clip: padding-box;
   }
 }
 
 @layer components {
-  /* Small uppercase eyebrow label used above section headings */
+  /* Constrained content column shared by every section */
+  .shell {
+    @apply mx-auto max-w-shell px-5 sm:px-8 lg:px-12;
+  }
+
+  /* Small uppercase monospace label: section numbers, captions, metadata.
+     Deliberately sets no size or tracking — callers pick those, so a utility
+     on the element can never collide with one baked in here (which utility
+     wins would depend on CSS output order, not class order). */
+  .label {
+    @apply font-mono uppercase;
+  }
+
+  /* Section eyebrow, e.g. "01 — The science" */
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-clay-200 bg-clay-50 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-clay-700;
+    @apply label text-[12px] tracking-[0.2em] text-clay-500;
+  }
+
+  /* Section heading */
+  .h2 {
+    @apply font-display text-[clamp(30px,4.2vw,56px)] font-medium leading-[1.04] tracking-[-0.025em];
+  }
+
+  /* Anchor offset so the sticky header never covers a section heading */
+  .anchor {
+    scroll-margin-top: 72px;
+  }
+}
+
+/* ---- Figure animations ---------------------------------------------------
+   Driven from inline SVG styles in components/figures/*. Kept as raw CSS
+   because they animate SVG-only properties (stroke-dashoffset, offset-distance)
+   that Tailwind has no utilities for. */
+
+@keyframes cualliOrbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Free PFAS particle sweeping through the lumen */
+@keyframes cualliCapture {
+  0% {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  10% {
+    transform: translateX(6px);
+    opacity: 1;
+  }
+  66% {
+    transform: translateX(162px);
+    opacity: 1;
+  }
+  78%,
+  100% {
+    transform: translateX(188px);
+    opacity: 0;
+  }
+}
+
+/* Chassis cell: arrives, dwells while it loads, then exits */
+@keyframes cualliCell {
+  0% {
+    transform: translateX(-96px);
+    opacity: 0;
+  }
+  12% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  56% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  88% {
+    transform: translateX(176px);
+    opacity: 0.55;
+  }
+  94%,
+  100% {
+    transform: translateX(196px);
+    opacity: 0;
+  }
+}
+
+/* Bound-PFAS dots accumulating inside a cell, staggered */
+@keyframes cualliClumpA {
+  0%,
+  14% {
+    opacity: 0;
+  }
+  24%,
+  100% {
+    opacity: 0.95;
+  }
+}
+@keyframes cualliClumpB {
+  0%,
+  28% {
+    opacity: 0;
+  }
+  38%,
+  100% {
+    opacity: 0.9;
+  }
+}
+@keyframes cualliClumpC {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  52%,
+  100% {
+    opacity: 0.85;
+  }
+}
+
+/* Peristalsis — a slow squeeze of the gut walls */
+@keyframes cualliPeri {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.964);
+  }
+}
+
+/* Marker travelling along a plotted path */
+@keyframes cualliRun {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* Plot line drawing itself in */
+@keyframes cualliDraw {
+  0% {
+    stroke-dashoffset: 520;
+  }
+  42%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes cualliFadeIn {
+  0%,
+  16% {
+    opacity: 0;
+  }
+  52%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes cualliNode {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cualliGlowBand {
+  0%,
+  100% {
+    opacity: 0.38;
+  }
+  50% {
+    opacity: 0.8;
   }
 }
 

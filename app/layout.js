@@ -1,20 +1,65 @@
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import BackgroundMesh from "@/components/BackgroundMesh";
+import SiteHeader from "@/components/SiteHeader";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/site";
 
-const inter = Inter({
-  subsets: ["latin"],
+// Fonts are vendored in app/fonts (latin subsets pulled from Google Fonts) and
+// loaded through next/font/local rather than next/font/google. Two reasons:
+// the build needs no network access (next/font/google's build-time fetch hangs
+// on current Node versions), and nothing is requested from a third party at
+// runtime, which keeps the `font-src 'self'` CSP below satisfiable.
+//
+// To refresh a face, re-download the `latin` subset woff2 from the Google Fonts
+// css2 endpoint and replace the file in place.
+
+const plexSans = localFont({
+  // Served as a single variable file spanning 400–600.
+  src: [
+    {
+      path: "./fonts/ibm-plex-sans-400-600-latin.woff2",
+      weight: "400 600",
+      style: "normal",
+    },
+  ],
   variable: "--font-sans",
   display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
 });
 
-const SITE_URL = "https://cualli.bio";
-const TITLE =
-  "Cualli | Living Medicine for Internal PFAS Remediation";
+const bricolage = localFont({
+  src: [
+    {
+      path: "./fonts/bricolage-grotesque-400-800-latin.woff2",
+      weight: "400 800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-display",
+  display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+});
+
+const plexMono = localFont({
+  src: [
+    {
+      path: "./fonts/ibm-plex-mono-400-latin.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/ibm-plex-mono-500-latin.woff2",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+  variable: "--font-mono",
+  display: "swap",
+  fallback: ["ui-monospace", "monospace"],
+});
+
+const TITLE = "Cualli | Filter the Forever — Engineered Living Medicine for PFAS";
 const DESCRIPTION =
-  "Cualli builds programmable probiotics — a living medicine that performs internal remediation, capturing PFAS forever chemicals in the gut to lower the body's toxic burden. The next generation of programmable medicine.";
+  "Cualli is building a programmable probiotic that captures PFAS forever chemicals in the gut and carries them out, breaking the recirculation loop that keeps exposure in the body for years.";
 const OG_IMAGE = "/og-image.png";
 
 export const metadata = {
@@ -31,10 +76,10 @@ export const metadata = {
     "programmable probiotics",
     "programmable medicine",
     "living medicine",
-    "PFAS degradation",
+    "PFAS body burden",
     "PFAS forever chemicals",
-    "forever chemicals body burden",
     "PFAS removal from the body",
+    "enterohepatic recirculation",
     "synthetic biology",
     "EcN 1917",
     "E. coli Nissle 1917",
@@ -68,7 +113,7 @@ export const metadata = {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Cualli — living medicine for internal PFAS remediation",
+        alt: "Cualli — engineered living medicine for PFAS clearance",
       },
     ],
   },
@@ -82,7 +127,8 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#FAFAF8",
+  themeColor: "#07090a",
+  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
 };
@@ -94,7 +140,7 @@ export const viewport = {
 // tag cannot deliver, e.g. frame-ancestors / X-Frame-Options) are configured in
 // next.config.mjs and vercel.json for server/Vercel deployments.
 // 'unsafe-inline' is required because static export precludes per-request
-// nonces, and Next.js + framer-motion inject inline hydration scripts/styles.
+// nonces, and Next.js injects inline hydration scripts/styles.
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -117,11 +163,10 @@ const ORG_JSONLD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Cualli",
-  url: "https://cualli.bio",
-  logo: "https://cualli.bio/cualli_logo.webp",
-  description:
-    "Cualli builds programmable probiotics — a living medicine for internal remediation that captures PFAS forever chemicals in the gut to lower the body's toxic burden.",
-  email: "olinares@cualli.bio",
+  url: SITE_URL,
+  logo: `${SITE_URL}/cualli_logo.webp`,
+  description: DESCRIPTION,
+  email: CONTACT_EMAIL,
   knowsAbout: [
     "Programmable probiotics",
     "PFAS forever chemicals",
@@ -133,7 +178,10 @@ const ORG_JSONLD = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html
+      lang="en"
+      className={`${plexSans.variable} ${bricolage.variable} ${plexMono.variable}`}
+    >
       <head>
         <meta httpEquiv="Content-Security-Policy" content={CSP} />
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
@@ -146,11 +194,9 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="relative font-sans">
-        <BackgroundMesh />
-        <Navbar />
-        <main className="relative z-10">{children}</main>
-        <Footer />
+      <body className="relative">
+        <SiteHeader />
+        <main>{children}</main>
       </body>
     </html>
   );

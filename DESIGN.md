@@ -1,45 +1,94 @@
-# Cualli Next.js & Tailwind Architecture Guidelines
+# Cualli Site — Design & Architecture Guidelines
 
-## Core Aesthetic & Architecture Vision
-The Cualli website operates as a welcoming, clean, and minimal portal into the future of synthetic biology[cite: 1, 2]. Moving away from a dark liquid glass aesthetic, the new interface utilizes a sleek, warm, and light-theme design to convey approachability, safety, and scientific precision[cite: 1]. 
-The architecture is structured entirely on a single page, featuring sticky navigation tabs at the top that allow users to scroll smoothly to different content sections of the page[cite: 1].
+Implements `Cualli Site.dc.html`. This document describes the current dark
+"engineered living medicine" aesthetic; it replaces the earlier warm light-theme
+guidelines.
 
-## Tech Stack
-* **Framework:** Next.js (App Router)[cite: 1].
-* **Styling:** Tailwind CSS[cite: 1].
-* **Animation:** Framer Motion[cite: 1].
-* **Deployment:** Vercel (recommended)[cite: 1].
+## Core aesthetic
 
-## Single-Page Navigation Structure
-The sticky top navigation bar should contain tabs linked to the following core sections derived from the project presentation[cite: 2]:
-* **Hero/Vision:** Displaying the mission to develop "the next generation of programmable medicine" through a "Programmable Intestinal Microbiome"[cite: 2].
-* **The Problem:** Highlighting the PFAS crisis, noting that over 15,000 variants of "forever chemicals" exist and that 98% of Americans carry PFAS in their bloodstream[cite: 2]. 
-* **The Solution:** Introducing "Internal Remediation" and the programmable probiotic designed to capture PFAS directly in the gut to lower the body burden[cite: 2].
-* **Mechanism:** Outlining the three-step scientific process: Colonize (using E. coli Nissle 1917), Capture (by inactivating the AcrB efflux pump), and Clear (via normal fecal elimination)[cite: 2].
-* **Market & Roadmap:** Detailing the expansion path from B2G/B2B institutional contracts (such as the Department of Defense and municipal utilities like OWASA) to B2C consumer living medicine[cite: 2].
-* **Team:** Showcasing the founders (Osvaldo Linares Gutiérrez, Moiz Chomelawala, Chinmay Singh, and Jinghan (Alex) Li) alongside project advisors[cite: 2].
+A near-black lab canvas with a single bioluminescent green accent and a warm
+terracotta secondary. The register is instrument panel, not brochure: monospace
+metadata, hairline rules, schematic figures with axis labels and honest
+"pre-clinical / illustrative" captions. Claims are sourced inline.
 
-## Color Palette & Tailwind Config
-* **Background:** Soft, warm, and clean off-white (e.g., `bg-slate-50` or `bg-[#FAFAFA]`) to replace the deep abyssal black and ultra-dark charcoal[cite: 1]. 
-* **Primary Accents:** Earthy, warm tones to replace the bioluminescent cyan and emerald gradients[cite: 1]. 
-* **Surfaces:** Clean, minimal white cards with subtle shadows (`bg-white shadow-sm border-slate-100`) rather than translucent liquid glass panels[cite: 1].
-* **Text:** Dark charcoal (`text-slate-900`) for primary headers and warm medium gray (`text-slate-600`) for paragraph text, replacing the previous pure white and soft silver styling[cite: 1].
+The whole site is one page. A sticky header tracks whichever section is on
+screen via `IntersectionObserver` and lights that section's indicator dot.
+
+## Tech stack
+
+- **Framework:** Next.js (App Router), `output: "export"` — see the deployment note below.
+- **Styling:** Tailwind CSS, tokens in `tailwind.config.js`.
+- **Animation:** CSS keyframes only (no animation library is used).
+
+## Sections
+
+In order, matching the nav and the scroll spy in `components/SiteHeader.js`:
+
+| id         | Section                    | Component              |
+| ---------- | -------------------------- | ---------------------- |
+| `home`     | Hero + sourced stat grid   | `Hero.js`              |
+| —          | Affiliation marquee        | `Ticker.js`            |
+| `science`  | 01 — The science           | `ScienceSection.js`    |
+| `platform` | 02 — The platform          | `PlatformSection.js`   |
+| `team`     | 03 — The team              | `TeamSection.js`       |
+| `news`     | 04 — News / the landscape  | `NewsSection.js`       |
+| `awards`   | 05 — Awards                | `AwardsSection.js`     |
+| `contact`  | Closing CTA + footer bar   | `ContactSection.js`    |
+
+## Color tokens
+
+Defined in `tailwind.config.js`; the two accents are additionally mirrored as
+`--ac` / `--acw` on `:root` in `app/globals.css` so the `shadow-glow*` tokens
+can reference them.
+
+- `ink-950 … ink-800` — surfaces, darkest (page canvas) to lightest (figure internals).
+- `mist-50 … mist-600` — text, brightest to faintest.
+- `spore` (`#86e8a8`) — the primary accent. Used sparingly: active states, the
+  single "0" stat, figure data lines, hover glows.
+- `clay-500` (`#c06e3b`) — warm secondary. Section numbers, captions, "free PFAS".
+- `slab-*` — cool neutral greys, used **only** by the News section.
+
+The News section is deliberately off-palette: desaturated, uppercase, newsprint
+styling with `filter: grayscale(1)`, so external coverage reads as evidence
+rather than as Cualli's own marketing. Don't introduce accent colour there.
 
 ## Typography
-* **Primary Font:** `next/font/google` using Inter or Roboto[cite: 1].
-* **Headers:** Clean, bold, and welcoming. Avoid transparent text with custom gradients[cite: 1]; instead, use solid dark tones for strong legibility and a minimal feel.
-* **Body:** Clean and highly legible, maintaining a loose line height (`leading-relaxed`)[cite: 1].
 
-## Clean Minimalist Component Rules
-* Containers should utilize clean styling with gentle corners (use `rounded-lg` or `rounded-xl`), completely avoiding heavy backdrop filters and semi-transparent borders[cite: 1].
-* Hover states should remain subtle and minimal, avoiding the shifting color gradients and liquid surface tension simulations previously used[cite: 1].
-* The navigation bar should act as a sticky, lightly frosted or solid header at the top of the screen (`sticky top-0 bg-white/90 backdrop-blur-sm z-50`), housing the scrolling tabs rather than floating as a liquid glass pill[cite: 1].
+Three faces, all self-hosted by `next/font/google` (important — see CSP below):
 
-## Animation & Motion
-* Implement smooth scrolling functionality to seamlessly navigate between the top tabs and their corresponding sections on the single page[cite: 1].
-* Page transitions and element reveals are handled by Framer Motion, keeping them subtle, quick, and clean (`initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}`)[cite: 1].
-* Backgrounds should remain static, warm, and clean, removing the slow, amorphous CSS gradient blobs used to simulate a microscopic fluid environment[cite: 1].
+- `font-display` — **Bricolage Grotesque**, weight 500, tight tracking. Headings and stat numerals.
+- `font-sans` — **IBM Plex Sans**. Body copy, plus the News section's headings.
+- `font-mono` — **IBM Plex Mono**. Labels, metadata, figure annotations.
 
-## Video & Media Integration
-* Media elements, such as lab proof of concept imagery or founder headshots, should blend seamlessly into the clean layout with standard border-radius masking[cite: 1, 2].
-* Autoplaying videos should continue to use the standard HTML5 `<video>` tag with `autoPlay`, `loop`, `muted`, and `playsInline` attributes[cite: 1].
+Shared component classes live in `app/globals.css`: `.shell` (content column),
+`.label`, `.eyebrow`, `.h2`, `.anchor` (sticky-header scroll offset). `.label`
+intentionally sets no font-size or tracking — callers set both, so a utility can
+never collide with one baked into the class.
+
+## Figures
+
+`components/figures.js` holds four schematics: `LumenFigure` (Science) and
+`ColonizationFigure` / `IsothermFigure` / `MassBalanceFigure` (the three
+Platform steps). They are plain SVG animated purely by the `cualli*` keyframes
+in `globals.css`, so they render on the server, need no JS, and go still under
+`prefers-reduced-motion`.
+
+Accent colours in that file are **literal hex**, not `var(--ac)`: the values are
+used in SVG presentation attributes (`fill=`, `stroke=`, `stop-color=`), which
+cannot reference custom properties. Keep them in sync with `:root`.
+
+## Motion
+
+- Subtle and looping: `breathe` glows, the `marquee` ticker, self-drawing plot lines.
+- The Platform panel auto-advances every 6s and stops permanently on first manual selection.
+- The hero glow drifts toward the cursor — a pointer-only flourish, never load-bearing.
+- Everything is suppressed by the `prefers-reduced-motion` block at the end of `globals.css`. Any new animation must be reachable by that rule (i.e. a CSS animation/transition, not a JS tween).
+
+## Deployment constraints
+
+Static export to GitHub Pages (custom domain `cualli.bio`), which cannot set
+custom response headers. Consequences:
+
+- The CSP is delivered by `<meta>` in `app/layout.js`; the header-based equivalent in `next.config.mjs` / `vercel.json` only applies on Vercel or `next start`. Keep all three in sync.
+- `font-src 'self'` means fonts must be self-hosted. Always load faces through `next/font`, never a `<link>` to Google Fonts.
+- `images.unoptimized` is set, so images are pre-optimized to WebP at authoring time. Use static imports (`import img from "@/public/…"`) to keep intrinsic dimensions and blur placeholders.

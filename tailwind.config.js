@@ -7,11 +7,31 @@ module.exports = {
   theme: {
     extend: {
       // ---- Design tokens ------------------------------------------------
-      // Warm, light, clinical-but-approachable palette.
+      // Dark, near-black lab palette with a single bioluminescent accent.
       colors: {
-        // Soft warm off-white canvas
-        canvas: "#FAFAF8",
-        // Terracotta / clay — the primary warm accent
+        // Surfaces, darkest → lightest
+        ink: {
+          950: "#07090a", // page canvas
+          900: "#090c0d", // alternating section band
+          880: "#090d0e", // figure well
+          850: "#0b0f10", // cards
+          800: "#0f1614", // cell fill inside figures
+        },
+        // Text, brightest → faintest
+        mist: {
+          50: "#eaefec",
+          200: "#b9c2bc",
+          300: "#8b948f",
+          400: "#7d8781",
+          500: "#6e7873",
+          600: "#5c6561",
+        },
+        // Primary accent — engineered-biology green
+        spore: {
+          DEFAULT: "#86e8a8",
+          dim: "rgba(134,232,168,.18)",
+        },
+        // Secondary warm accent (terracotta), carried over from the earlier palette
         clay: {
           50: "#FBF6F1",
           100: "#F5E7DA",
@@ -24,42 +44,64 @@ module.exports = {
           800: "#6E3B22",
           900: "#5B321F",
         },
-        // Sage / moss — the secondary earthy accent (signals biology + safety)
-        sage: {
-          50: "#F4F6F1",
-          100: "#E5EADD",
-          200: "#C9D4BC",
-          300: "#A7B894",
-          400: "#879B70",
-          500: "#6E8257",
-          600: "#586A45",
-          700: "#475636",
-          800: "#3A452D",
-          900: "#303A26",
+        // Cool neutral greys for the desaturated "News / landscape" section,
+        // which is deliberately styled as a newsprint record rather than a card grid.
+        slab: {
+          100: "#cfd3d4",
+          300: "#8a8f92",
+          400: "#6b7073",
+          500: "#61666a",
+          600: "#565b5e",
+          700: "#4e5457",
+          800: "#2c3032",
+          850: "#262a2c",
+          900: "#222527",
+          925: "#171a1b",
+          950: "#101213",
         },
       },
       fontFamily: {
-        // Wired up by next/font in app/layout.js via the --font-sans variable.
+        // Wired up by next/font in app/layout.js.
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
+      maxWidth: {
+        shell: "1240px",
       },
       borderRadius: {
         "4xl": "2rem",
         "5xl": "2.75rem",
       },
       boxShadow: {
-        // Soft, neutral elevation for clean white surfaces.
-        card: "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -16px rgba(15,23,42,0.12)",
-        "card-hover":
-          "0 2px 4px rgba(15,23,42,0.05), 0 16px 40px -20px rgba(15,23,42,0.18)",
+        // Accent bloom used on hover for cards, pills and buttons.
+        glow: "0 0 40px -14px var(--ac)",
+        "glow-sm": "0 0 28px -10px var(--ac)",
+        "glow-lg": "0 0 46px -16px var(--ac)",
+        lift: "0 24px 60px -30px var(--ac), 0 0 40px -18px var(--ac)",
+        "lift-lg": "0 26px 70px -34px var(--ac), 0 0 44px -18px var(--ac)",
+        cta: "0 0 0 1px var(--ac), 0 22px 60px -18px var(--ac)",
+        ring: "0 0 0 1px var(--ac), 0 0 36px -8px var(--ac)",
       },
       keyframes: {
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        breathe: {
+          "0%,100%": { opacity: ".55", transform: "scale(1)" },
+          "50%": { opacity: ".9", transform: "scale(1.06)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out both",
+        marquee: "marquee var(--ticker-dur, 48s) linear infinite",
+        breathe: "breathe 9s ease-in-out infinite",
+        "breathe-slow": "breathe 11s ease-in-out infinite",
       },
     },
   },
