@@ -1,16 +1,30 @@
-// Awards laid out as a CSS-columns masonry so cards of different heights (some
-// with a photo well, some text-only) pack without gaps.
-//
-// `photo` marks a reserved image well. No award photography exists yet, so the
-// well renders as a hatched placeholder at the intended aspect — swap in a
-// next/image with a static import when the photos land.
+import Image from "next/image";
 
+// Static imports keep intrinsic dimensions (no layout shift) and give each
+// photo a blur placeholder, both of which survive `output: "export"`. Sources
+// are pre-resized to 900px-wide WebP at authoring time, since static export
+// disables next/image runtime optimization.
+import venturepackCheck from "@/public/awards/venturepack-check.webp";
+import venturepackAudience from "@/public/awards/venturepack-audience-choice.webp";
+import lampePitch from "@/public/awards/lampe-pitch.webp";
+
+// Awards laid out as a CSS-columns masonry so cards of different heights (some
+// with photos, some text-only) pack without gaps.
 const AWARDS = [
   {
     org: "NC State",
-    title: "VenturePack at NCSU",
-    body: "Selected venture — pitch competition cohort. Award details to confirm.",
-    photo: { height: 240, note: "photo — pitch finals, 4:3" },
+    title: "VenturePack Challenge",
+    body: "Selected for 2nd place award winner and Audience Choice Award at the NCSU VenturePack Challenge in 2026.",
+    photos: [
+      {
+        src: venturepackCheck,
+        alt: "The Cualli team holding their $4,500 VenturePack Challenge prize check",
+      },
+      {
+        src: venturepackAudience,
+        alt: "The Cualli team holding their $500 VenturePack Challenge Audience Choice prize check",
+      },
+    ],
   },
   {
     org: "UNC-Chapel Hill",
@@ -22,18 +36,19 @@ const AWARDS = [
     org: "UNC / NC State",
     title: "Lampe Joint Department of Biomedical Engineering",
     body: "Research support and lab access through the joint BME department.",
-    photo: { height: 320, note: "photo — team with award, 3:4" },
+    photos: [
+      {
+        src: lampePitch,
+        alt: "Cualli co-founders presenting on stage at the McKimmon Conference and Training Center",
+      },
+    ],
   },
   {
     org: "Innovate Carolina",
     title: "Innovate Carolina",
     body: "Venture programming and mentorship through UNC's innovation hub.",
-    photo: { height: 200, note: "photo — demo day, 16:9" },
   },
 ];
-
-const HATCH =
-  "repeating-linear-gradient(135deg, rgba(234,239,236,.05) 0 1px, transparent 1px 10px)";
 
 export default function AwardsSection() {
   return (
@@ -55,17 +70,20 @@ export default function AwardsSection() {
             key={award.title}
             className="mb-4 overflow-hidden rounded-2xl border border-mist-50/10 bg-ink-850 transition-all duration-300 [break-inside:avoid] hover:-translate-y-[3px] hover:border-spore hover:shadow-lift-lg"
           >
-            {award.photo && (
-              <div
-                className="grid place-items-center border-b border-mist-50/[0.08]"
-                style={{
-                  height: award.photo.height,
-                  backgroundImage: HATCH,
-                }}
-              >
-                <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-mist-500">
-                  {award.photo.note}
-                </span>
+            {award.photos && (
+              // 1px gaps over a light background read as hairline dividers when
+              // a card stacks more than one photo.
+              <div className="flex flex-col gap-px border-b border-mist-50/[0.08] bg-mist-50/[0.08]">
+                {award.photos.map((photo) => (
+                  <Image
+                    key={photo.alt}
+                    src={photo.src}
+                    alt={photo.alt}
+                    placeholder="blur"
+                    sizes="(min-width: 700px) 400px, 100vw"
+                    className="block w-full"
+                  />
+                ))}
               </div>
             )}
             <div className={award.large ? "px-[22px] py-[26px]" : "p-[22px]"}>
@@ -87,16 +105,6 @@ export default function AwardsSection() {
             </div>
           </article>
         ))}
-
-        <div className="mb-4 rounded-2xl border border-dashed border-mist-50/[0.16] px-[22px] py-[26px] transition-all duration-300 [break-inside:avoid] hover:border-spore hover:shadow-[0_0_40px_-20px_var(--ac)]">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-mist-500">
-            Slot open
-          </p>
-          <p className="mt-3 text-[14.5px] leading-[1.6] text-mist-300">
-            Room here for the next award — send the photo and the citation and
-            it drops in.
-          </p>
-        </div>
       </div>
     </section>
   );

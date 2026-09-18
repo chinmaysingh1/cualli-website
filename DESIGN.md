@@ -84,6 +84,42 @@ cannot reference custom properties. Keep them in sync with `:root`.
 - The hero glow drifts toward the cursor — a pointer-only flourish, never load-bearing.
 - Everything is suppressed by the `prefers-reduced-motion` block at the end of `globals.css`. Any new animation must be reachable by that rule (i.e. a CSS animation/transition, not a JS tween).
 
+## Brand assets, icons and the social card
+
+`scripts/generate-brand-assets.mjs` regenerates the whole favicon set and the
+Open Graph card from `public/cualli_logo.webp`. Run it by hand after the logo
+changes — it is intentionally **not** part of `npm run build`, so CI never
+depends on it:
+
+```bash
+node scripts/generate-brand-assets.mjs
+```
+
+The mark is the logo's "C", which is drawn as a bacterium. The script uses
+**optical sizing**: 16/32px icons use the letter body alone with an alpha boost,
+because the flagellum both shrinks the letter inside a square and dissolves into
+mush below ~32px; 180/192/512px icons keep the tail, where the detail reads.
+
+Icons are declared explicitly in `metadata.icons` rather than through the
+`app/icon.*` file convention, because that convention derives every size from a
+single source and would throw away the optical sizing.
+
+## SEO
+
+- One `<h1>`, then a clean `h2`/`h3` hierarchy with no skipped levels.
+- Title ≤ ~60 chars and description ≤ ~160 chars, so neither is truncated in search results.
+- JSON-LD `@graph` with a linked `Organization` + `WebSite` in `app/layout.js`. It is a hard-coded object serialized with `<` escaped — never interpolate user input into it.
+- `app/sitemap.js`, `app/robots.js` and `app/manifest.js` all set `dynamic = "force-static"`, which is what lets them emit as files under `output: "export"`.
+- `robots.js` blocks `GPTBot` and `CCBot`.
+- Every image carries alt text and everything below the fold is lazy-loaded; the header wordmark is `priority` since it is the LCP element.
+
+## Security
+
+- CSP is delivered by `<meta>` (see the deployment note below) and mirrored as headers in `next.config.mjs` / `vercel.json`. **Keep all three in sync.**
+- `frame-ancestors` lives *only* in the header-based policies. Browsers ignore it in a `<meta>` CSP and log an error on every page view. This means clickjacking protection is absent on GitHub Pages, which cannot send headers — it applies on Vercel / `next start`. Serving behind a host that can set headers is the fix if that matters.
+- `'unsafe-inline'` on `script-src` is unavoidable: static export precludes per-request nonces and Next injects inline hydration scripts. Don't add third-party scripts — `connect-src 'self'` and `script-src 'self'` mean any analytics or embed would need the policy widened.
+- External links use `rel="noopener noreferrer"`.
+
 ## Deployment constraints
 
 Static export to GitHub Pages (custom domain `cualli.bio`), which cannot set

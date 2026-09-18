@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   ColonizationFigure,
-  IsothermFigure,
+  CaptureFigure,
   MassBalanceFigure,
 } from "@/components/figures";
 
@@ -25,8 +25,8 @@ const STEPS = [
     kicker: "Capture",
     heading: "Affinity where the compound is",
     body: "Binding domains engineered for fluorinated tails are displayed on the cell surface, concentrating PFAS out of bile and luminal fluid. Affinity is tuned per chain length so PFOS and PFOA are captured preferentially.",
-    figLabel: "binding isotherm — capture vs. free concentration",
-    Figure: IsothermFigure,
+    figLabel: "single chassis cell — PFAS bound and retained",
+    Figure: CaptureFigure,
   },
   {
     n: 3,

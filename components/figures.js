@@ -167,32 +167,178 @@ export function ColonizationFigure() {
   );
 }
 
-// ---- Step 02: binding isotherm --------------------------------------------
+// ---- Step 02: capture inside a single chassis cell -------------------------
+//
+// Zoomed in one level from the Science figure: instead of cells moving through
+// the lumen, this is one cell held still so the mechanism is legible — free
+// PFAS drift in, dock at a surface-displayed binding domain, and pile up
+// inside. The occupancy meter keeps the quantitative read the earlier
+// isotherm plot carried.
 
-const ISO_HI = "M30,172 C62,126 92,72 146,58 C216,40 288,38 344,36";
-const ISO_LO = "M30,172 C92,162 162,151 232,143 C282,137 318,134 344,132";
+const CELL = { x: 120, y: 46, w: 180, h: 90, rx: 45 };
+const CELL_CY = CELL.y + CELL.h / 2; // 91
 
-export function IsothermFigure() {
+// Binding domains: a stalk off the membrane with a receptor head on the tip.
+const RECEPTORS = [
+  ...[150, 180, 210, 240, 270].map((x) => ({
+    x1: x, y1: CELL.y, x2: x, y2: CELL.y - 8, cx: x, cy: CELL.y - 10,
+  })),
+  ...[150, 180, 210, 240, 270].map((x) => ({
+    x1: x, y1: CELL.y + CELL.h, x2: x, y2: CELL.y + CELL.h + 8,
+    cx: x, cy: CELL.y + CELL.h + 10,
+  })),
+  { x1: CELL.x, y1: CELL_CY, x2: CELL.x - 8, y2: CELL_CY, cx: CELL.x - 10, cy: CELL_CY },
+];
+
+// Approach paths from the lumen to a receptor head.
+const INFLOWS = [
+  { d: "M4,24 C46,26 96,30 148,34", dur: 3.2, delay: 0 },
+  { d: "M4,96 C38,94 74,92 106,91", dur: 3.6, delay: 0.9 },
+  { d: "M4,178 C56,174 116,160 178,146", dur: 3.4, delay: 1.8 },
+  { d: "M4,58 C58,54 142,40 208,34", dur: 4, delay: 2.6 },
+];
+
+// Captured molecules, placed clear of the membrane. Index drives which
+// cualliFill keyframe (and therefore which slot in the cycle) each one uses.
+const LOAD = [
+  { cx: 155, cy: 88 },
+  { cx: 178, cy: 70 },
+  { cx: 182, cy: 108 },
+  { cx: 208, cy: 90 },
+  { cx: 232, cy: 72 },
+  { cx: 238, cy: 108 },
+  { cx: 262, cy: 90 },
+];
+
+const CYCLE = "9s";
+
+export function CaptureFigure() {
   return (
     <Frame viewBox="0 0 360 200">
+      <defs>
+        <radialGradient id="cgcell" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={AC} stopOpacity={0.16} />
+          <stop offset="100%" stopColor={AC} stopOpacity={0.03} />
+        </radialGradient>
+      </defs>
+
+      {/* Cell body */}
+      <rect
+        x={CELL.x}
+        y={CELL.y}
+        width={CELL.w}
+        height={CELL.h}
+        rx={CELL.rx}
+        fill="#0f1614"
+        stroke={AC}
+        strokeOpacity={0.7}
+        strokeWidth={1.6}
+        style={{ filter: "drop-shadow(0 0 14px rgba(134,232,168,.35))" }}
+      />
+      <rect
+        x={CELL.x}
+        y={CELL.y}
+        width={CELL.w}
+        height={CELL.h}
+        rx={CELL.rx}
+        fill="url(#cgcell)"
+      />
+
+      {/* Surface-displayed binding domains */}
       <g>
-        <GridLines />
+        {RECEPTORS.map((r, i) => (
+          <g
+            key={`${r.cx}-${r.cy}`}
+            style={{
+              animation: `cualliDock 2.8s ${(i % 5) * 0.4}s ease-in-out infinite`,
+            }}
+          >
+            <line
+              x1={r.x1}
+              y1={r.y1}
+              x2={r.x2}
+              y2={r.y2}
+              stroke={AC}
+              strokeOpacity={0.8}
+              strokeWidth={1.3}
+            />
+            <circle cx={r.cx} cy={r.cy} r={2.4} fill={AC} />
+          </g>
+        ))}
       </g>
-      <Axes />
-      <DrawnPath d={ISO_LO} stroke="#6e7873" delay={0.3} width={1.6} />
-      <DrawnPath d={ISO_HI} stroke={AC} />
-      <Runner d={ISO_HI} fill={AC} dur={5} />
-      <text x={30} y={14} style={MONO}>
-        bound PFAS / 10⁹ cells
+
+      {/* Captured PFAS accumulating inside */}
+      <g>
+        {LOAD.map((dot, i) => (
+          <circle
+            key={`${dot.cx}-${dot.cy}`}
+            cx={dot.cx}
+            cy={dot.cy}
+            r={3.4}
+            fill={ACW}
+            // No `opacity: 0` base style here: under prefers-reduced-motion
+            // the animation is cut to ~0s, and the element falls back to its
+            // base style. Leaving it visible means the still frame shows a
+            // loaded cell, which is the point of the figure.
+            style={{
+              animation: `cualliFill${i + 1} ${CYCLE} linear infinite`,
+            }}
+          />
+        ))}
+      </g>
+
+      {/* Free PFAS drifting in from the lumen */}
+      <g>
+        {INFLOWS.map((f) => (
+          <circle
+            key={f.d}
+            r={3.4}
+            cx={0}
+            cy={0}
+            fill={ACW}
+            style={{
+              offsetPath: `path('${f.d}')`,
+              offsetRotate: "0deg",
+              animation: `cualliInflow ${f.dur}s ${f.delay}s linear infinite`,
+            }}
+          />
+        ))}
+      </g>
+
+      {/* Occupancy meter */}
+      <rect
+        x={CELL.x}
+        y={171}
+        width={CELL.w}
+        height={5}
+        rx={2.5}
+        fill="rgba(234,239,236,.1)"
+      />
+      <rect
+        x={CELL.x}
+        y={171}
+        width={CELL.w}
+        height={5}
+        rx={2.5}
+        fill={ACW}
+        style={{
+          transformBox: "fill-box",
+          transformOrigin: "left center",
+          animation: `cualliOccupancy ${CYCLE} linear infinite`,
+        }}
+      />
+
+      <text x={4} y={14} style={MONO}>
+        free PFAS in lumen
       </text>
-      <text x={244} y={192} style={MONO}>
-        free conc. →
+      <text x={CELL.x} y={28} style={{ ...MONO, fill: AC }}>
+        binding domains
       </text>
-      <text x={214} y={32} style={{ ...MONO, fill: AC }}>
-        PFOS — long chain
+      <text x={CELL.x} y={163} style={{ ...MONO, fill: ACW }}>
+        bound load per cell
       </text>
-      <text x={214} y={128} style={MONO}>
-        PFBA — short chain
+      <text x={260} y={192} style={MONO}>
+        capacity
       </text>
     </Frame>
   );

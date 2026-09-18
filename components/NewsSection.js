@@ -5,6 +5,12 @@
 const ITEMS = [
   {
     title:
+      "North Carolina secures $455 million PFAS settlement from Chemours, DuPont and Corteva",
+    href: "https://www.wral.com/news/investigates/nc-reaches-445-million-dollar-pfas-settlement-chemours-dupont-september-2026/",
+    meta: ["WRAL", "September 2026", "Litigation"],
+  },
+  {
+    title:
       "EPA moves to rescind four PFAS drinking-water limits and push PFOA/PFOS compliance to 2031",
     href: "https://www.epa.gov/sdwa/proposed-pfas-rescission-rule",
     meta: ["U.S. EPA", "May 2026", "Rollback"],
@@ -79,7 +85,10 @@ export default function NewsSection({ grayscale = true }) {
               04 — News / the landscape
             </p>
             <h2 className="mt-4 text-[clamp(28px,4vw,52px)] font-semibold uppercase leading-[1.02] tracking-[-0.02em] text-slab-100">
-              Nothing about this
+              {/* The space before the break keeps the accessible name reading
+                  "Nothing about this is solved yet." rather than fusing the
+                  two words either side of the <br>. */}
+              Nothing about this{" "}
               <br />
               is solved yet.
             </h2>

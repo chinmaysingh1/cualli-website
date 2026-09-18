@@ -184,6 +184,96 @@
   }
 }
 
+/* --- Capture figure (Platform step 02) -----------------------------------
+   A single chassis cell seen up close: free PFAS drift in from the lumen, dock
+   at a surface-displayed binding domain, and accumulate inside. One shared 9s
+   cycle fills the cell and then clears, so the whole figure stays in lockstep.
+
+   The fill dots use one keyframe each rather than a shared keyframe with
+   staggered `animation-delay`: identical delays are what keep every dot on the
+   same cycle boundary, so the cell empties all at once instead of each dot
+   turning over on its own offset schedule. */
+
+/* A molecule drifting along its approach path and docking */
+@keyframes cualliInflow {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  80% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes cualliFill1 {
+  0%, 6% { opacity: 0; }
+  13%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill2 {
+  0%, 16% { opacity: 0; }
+  23%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill3 {
+  0%, 26% { opacity: 0; }
+  33%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill4 {
+  0%, 36% { opacity: 0; }
+  43%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill5 {
+  0%, 46% { opacity: 0; }
+  53%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill6 {
+  0%, 56% { opacity: 0; }
+  63%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes cualliFill7 {
+  0%, 66% { opacity: 0; }
+  73%, 92% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+/* Occupancy meter rising in step with the dots, then resetting with them */
+@keyframes cualliOccupancy {
+  0% {
+    transform: scaleX(0);
+  }
+  75%,
+  92% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+/* A receptor flashing as a molecule docks on it */
+@keyframes cualliDock {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 /* Peristalsis — a slow squeeze of the gut walls */
 @keyframes cualliPeri {
   0%,

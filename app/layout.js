@@ -57,9 +57,11 @@ const plexMono = localFont({
   fallback: ["ui-monospace", "monospace"],
 });
 
-const TITLE = "Cualli | Filter the Forever — Engineered Living Medicine for PFAS";
+// Kept under ~60 chars so search results don't truncate it.
+const TITLE = "Cualli | Filter the Forever — Living Medicine for PFAS";
+// Kept under ~160 chars for the same reason.
 const DESCRIPTION =
-  "Cualli is building a programmable probiotic that captures PFAS forever chemicals in the gut and carries them out, breaking the recirculation loop that keeps exposure in the body for years.";
+  "Cualli builds a programmable probiotic that captures PFAS forever chemicals in the gut and carries them out, breaking the loop that keeps exposure in the body.";
 const OG_IMAGE = "/og-image.png";
 
 export const metadata = {
@@ -89,6 +91,20 @@ export const metadata = {
   publisher: "Cualli",
   alternates: {
     canonical: SITE_URL,
+  },
+  manifest: "/manifest.webmanifest",
+  // Icons are declared explicitly rather than via the app/icon.* file
+  // convention so the small sizes can use their own optically-tuned artwork
+  // (see scripts/generate-brand-assets.mjs) instead of one source downscaled.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32", type: "image/x-icon" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   robots: {
     index: true,
@@ -141,6 +157,11 @@ export const viewport = {
 // next.config.mjs and vercel.json for server/Vercel deployments.
 // 'unsafe-inline' is required because static export precludes per-request
 // nonces, and Next.js injects inline hydration scripts/styles.
+//
+// `frame-ancestors` is deliberately absent here: browsers ignore it when it
+// arrives via <meta> and log an error for every page view. It is set in the
+// header-based policies instead (next.config.mjs / vercel.json), which is the
+// only place it can actually take effect.
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -149,10 +170,12 @@ const CSP = [
   "media-src 'self'",
   "font-src 'self'",
   "connect-src 'self'",
+  "manifest-src 'self'",
   "object-src 'none'",
+  "frame-src 'none'",
+  "worker-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'none'",
   "upgrade-insecure-requests",
 ].join("; ");
 
@@ -161,25 +184,61 @@ const CSP = [
 // possibility of markup breakout — the canonical safe JSON-LD pattern.
 const ORG_JSONLD = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Cualli",
-  url: SITE_URL,
-  logo: `${SITE_URL}/cualli_logo.webp`,
-  description: DESCRIPTION,
-  email: CONTACT_EMAIL,
-  knowsAbout: [
-    "Programmable probiotics",
-    "PFAS forever chemicals",
-    "Internal remediation",
-    "Synthetic biology",
-    "Living medicine",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Cualli",
+      alternateName: "Cualli Probiotic Therapeutics",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icon-512.png`,
+        width: 512,
+        height: 512,
+      },
+      image: `${SITE_URL}${OG_IMAGE}`,
+      description: DESCRIPTION,
+      email: CONTACT_EMAIL,
+      slogan: "Filter the Forever",
+      areaServed: "US",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Chapel Hill",
+        addressRegion: "NC",
+        addressCountry: "US",
+      },
+      knowsAbout: [
+        "Programmable probiotics",
+        "PFAS forever chemicals",
+        "Internal remediation",
+        "Enterohepatic recirculation",
+        "Synthetic biology",
+        "Living medicine",
+      ],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "business enquiries",
+        email: CONTACT_EMAIL,
+        availableLanguage: "English",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Cualli",
+      description: DESCRIPTION,
+      inLanguage: "en-US",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
   ],
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="en"
+      lang="en-US"
       className={`${plexSans.variable} ${bricolage.variable} ${plexMono.variable}`}
     >
       <head>
@@ -195,8 +254,16 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="relative">
+        {/* Lets keyboard and screen-reader users jump the sticky nav. Visually
+            hidden until focused. */}
+        <a
+          href="#home"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-spore focus:px-5 focus:py-3 focus:text-[15px] focus:font-semibold focus:text-ink-950"
+        >
+          Skip to content
+        </a>
         <SiteHeader />
-        <main>{children}</main>
+        <main id="main">{children}</main>
       </body>
     </html>
   );
