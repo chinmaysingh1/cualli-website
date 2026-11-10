@@ -47,7 +47,7 @@ export function AboutSection() {
                     href={linkedinUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${name} on LinkedIn (opens in a new tab)`}
+                    aria-label={`View ${name} on LinkedIn (opens in a new tab)`}
                   >
                     <img
                       src={imageSrc}
@@ -55,6 +55,18 @@ export function AboutSection() {
                       loading="lazy"
                       decoding="async"
                     />
+                    <span className="founder-linkedin" aria-hidden="true">
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        focusable="false"
+                      >
+                        <circle cx="5" cy="5" r="2" />
+                        <path d="M3 9h4v12H3zm7 0h4v1.6c.8-1.2 2-1.9 3.6-1.9 3 0 4.4 1.9 4.4 5.2V21h-4v-6.3c0-1.7-.6-2.6-1.9-2.6-1.5 0-2.1 1-2.1 2.8V21h-4z" />
+                      </svg>
+                    </span>
                   </a>
                 ) : (
                   <div className="founder-portrait" aria-hidden="true" />

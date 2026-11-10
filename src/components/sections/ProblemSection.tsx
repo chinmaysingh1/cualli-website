@@ -68,12 +68,12 @@ export function ProblemSection() {
     >
       <div className="problem-inner site-container">
         <header className="problem-header">
-          <p className="problem-label section-eyebrow">01 / THE PROBLEM</p>
+          <p className="problem-label section-eyebrow">THE PROBLEM</p>
           <h2
             id="science-title"
             className="problem-title section-heading font-display"
           >
-            The PFAS are everywhere.
+            PFAS are everywhere.
             <span>The effects can last.</span>
           </h2>
           <p className="problem-description section-body">{clientParagraph}</p>

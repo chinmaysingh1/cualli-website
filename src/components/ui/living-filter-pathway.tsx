@@ -123,7 +123,7 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
   }
 
   return (
-    <div ref={containerRef} className="technology-flow">
+    <div ref={containerRef} className="technology-flow" data-bacteria-running={running}>
       <ol
         className="technology-pathway"
         aria-label="Proposed living filter pathway"
@@ -174,6 +174,7 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
               </span>
             </button>
             {index < stages.length - 1 && (
+              <>
               <svg
                 className="technology-connector"
                 viewBox="0 0 100 12"
@@ -182,6 +183,24 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
               >
                 <path d="M0 6H96M91 2L96 6L91 10" />
               </svg>
+              <svg
+                className={`technology-bacteria-transit technology-bacteria-transit-${stage.value}`}
+                viewBox="0 0 60 28"
+                aria-hidden="true"
+                focusable="false"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <g className="technology-bacteria-traveler">
+                  <g transform="translate(29 14) scale(.75)">
+                    <Bacterium bound={stage.value === 'capture'} />
+                  </g>
+                </g>
+              </svg>
+              </>
             )}
           </li>
         ))}
@@ -220,7 +239,24 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
   )
 }
 
-// Original, conceptual vector illustrations; not validated biological models.
+// Original conceptual illustrations, not validated biological models.
+function Bacterium({ bound = false }: { bound?: boolean }) {
+  return (
+    <g className="technology-bacterium">
+      <rect x="-13" y="-6" width="26" height="12" rx="6" fill="var(--background)" />
+      <path d="M-8-6L-10-9M0-6V-9M8-6L10-9M-8 6L-10 9M0 6V9M8 6L10 9M-13 0C-18-4-17 5-22 1" />
+      <path d="M-7 0Q-3-4 0 0T7 0" opacity=".7" />
+      {bound && (
+        <g className="technology-bound-particles" fill="currentColor" strokeWidth="1">
+          <circle cx="-6" cy="-9" r="2" />
+          <circle cx="8" cy="8" r="1.8" />
+          <path d="M12-8L15-6L13-3L10-5Z" />
+        </g>
+      )}
+    </g>
+  )
+}
+
 function StageIllustration({ stage }: { stage: string }) {
   return (
     <svg
@@ -231,59 +267,56 @@ function StageIllustration({ stage }: { stage: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       focusable="false"
+      className={`technology-biology technology-biology-${stage}`}
     >
       {stage === 'take' && (
-        <g transform="rotate(28 60 54)">
-          <rect x="40" y="15" width="40" height="78" rx="20" />
-          <path d="M40 54H80M47 34C47 27 52 22 58 22" />
-          <circle cx="52" cy="66" r="1.5" />
-          <circle cx="64" cy="65" r="1.5" />
-          <circle cx="59" cy="76" r="1.5" />
-          <circle cx="68" cy="80" r="1.5" />
-        </g>
+        <>
+          <g transform="rotate(28 52 50)">
+            <g className="technology-capsule-cap">
+              <path d="M34 49V30a18 18 0 0 1 36 0V49ZM40 31C40 24 45 19 51 19" />
+            </g>
+            <path d="M34 53H70V73a18 18 0 0 1-36 0Z" />
+          </g>
+          <g transform="translate(81 52) rotate(20)">
+            <g className="technology-bacteria-emerge"><Bacterium /></g>
+          </g>
+          <g transform="translate(89 79) rotate(-12) scale(.75)">
+            <g className="technology-bacteria-emerge technology-bacteria-companion"><Bacterium /></g>
+          </g>
+        </>
       )}
       {stage === 'reach' && (
-        <g>
-          <path d="M51 12V27C51 35 39 33 36 40C32 49 39 52 46 52H77C88 52 88 65 77 65H43C32 65 32 78 43 78H76C84 78 86 88 78 92H68V100" />
-          <path d="M63 12V27C63 34 77 29 83 37C88 43 85 47 80 47H47C41 47 41 41 47 40H55" />
-          <path
-            d="M31 48C22 50 22 58 27 62C18 70 23 85 32 87C39 100 51 97 57 92H67"
-            opacity=".5"
-          />
-        </g>
+        <>
+          <g opacity=".65">
+            <path d="M51 12V27C51 35 39 33 36 40C32 49 39 52 46 52H77C88 52 88 65 77 65H43C32 65 32 78 43 78H76C84 78 86 88 78 92H68V100" />
+            <path d="M63 12V27C63 34 77 29 83 37C88 43 85 47 80 47H47C41 47 41 41 47 40H55" />
+            <path d="M31 48C22 50 22 58 27 62C18 70 23 85 32 87C39 100 51 97 57 92H67" opacity=".5" />
+          </g>
+          <g transform="translate(61 58) scale(.85)">
+            <g className="technology-bacteria-settle"><Bacterium /></g>
+          </g>
+          <g transform="translate(56 82) scale(.65)"><Bacterium /></g>
+        </>
       )}
       {stage === 'capture' && (
-        <g>
-          <g transform="rotate(-20 59 55)">
-            <rect x="27" y="36" width="65" height="36" rx="18" />
-            <path d="M37 36L34 30M51 36V29M66 36V29M80 37L84 31M37 72L34 78M52 72V79M67 72V79M81 70L86 76M27 48L20 46M27 60L20 63M92 48L99 46" />
-            <circle cx="45" cy="53" r="3" />
-            <circle cx="59" cy="57" r="3" />
-            <circle cx="74" cy="50" r="3" />
+        <>
+          <g transform="translate(61 55) rotate(-18) scale(1.65)"><Bacterium /></g>
+          <g className="technology-capture-particles" fill="currentColor">
+            <circle className="technology-contaminant technology-contaminant-one" cx="44" cy="37" r="3" />
+            <circle className="technology-contaminant technology-contaminant-two" cx="79" cy="67" r="2.7" />
+            <path className="technology-contaminant technology-contaminant-three" d="M76 28L81 32L77 37L72 33Z" />
           </g>
-          <circle cx="17" cy="24" r="3" />
-          <circle cx="100" cy="28" r="3" />
-          <circle cx="102" cy="83" r="3" />
-          <circle cx="32" cy="94" r="3" />
-          <path
-            d="M24 28L33 34M95 33L87 39M96 78L88 72"
-            strokeDasharray="2 4"
-            opacity=".6"
-          />
-        </g>
+        </>
       )}
       {stage === 'exit' && (
-        <g>
-          <path d="M20 31H43C57 31 56 54 70 54H103M94 45L103 54L94 63" />
-          <path
-            d="M20 54H41C51 54 51 67 62 67H84M20 77H43C56 77 53 90 67 90H86"
-            opacity=".55"
-          />
-          <path d="M77 82L86 90L77 98" opacity=".55" />
-          <circle cx="15" cy="31" r="2" />
-          <circle cx="15" cy="54" r="2" />
-          <circle cx="15" cy="77" r="2" />
-        </g>
+        <>
+          <g opacity=".55">
+            <path d="M16 54H104M95 45L104 54L95 63M23 84H90M84 79L90 84L84 89" />
+          </g>
+          <g transform="translate(61 45) scale(1.15)">
+            <g className="technology-bacteria-exit"><Bacterium bound /></g>
+          </g>
+        </>
       )}
     </svg>
   )
