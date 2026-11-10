@@ -1,55 +1,26 @@
+# dependencies
+/node_modules
 
-# Dependencies
-node_modules/
-.pnpm-store/
+# next.js
+/.next/
+/out/
+next-env.d.ts
 
-# Build outputs
-dist/
-dist-ssr/
-build/
-*.tsbuildinfo
+# production
+/build
 
-# Environment variables and secrets
-.env
-.env.*
-!.env.example
+# misc
+.DS_Store
+*.pem
 
-# Logs
-logs/
-*.log
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# Local development
-.cache/
-.temp/
-tmp/
-.vite/
+# local env files
+.env*.local
+.env
 
-# Editor settings
-.vscode/*
-!.vscode/extensions.json
-.idea/
-*.swp
-*.swo
-*~
-
-# Operating system files
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-# Testing and coverage
-coverage/
-.nyc_output/
-playwright-report/
-test-results/
-
-# Deployment
-.vercel/
-.netlify/
-
-# Local configuration
-*.local
+# vercel
+.vercel

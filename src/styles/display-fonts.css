@@ -1,8 +1,0 @@
-@font-face {
-  font-family: 'Quicksand Variable';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url('@fontsource-variable/quicksand/files/quicksand-latin-wght-normal.woff2')
-    format('woff2');
-}
