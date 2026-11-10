@@ -1,0 +1,329 @@
+/* Follow the navbar's compact reading state without moving section content
+   during its animation: 76% of the padded viewport, clamped to 760–1200px,
+   then remove the same 28px inner inset on either side. Hero stays unchanged. */
+:root {
+  --site-frame-width: 1200px;
+  --site-frame-inset: 28px;
+  --site-container-width: calc(
+    var(--site-frame-width) - 2 * var(--site-frame-inset)
+  );
+  --site-navbar-min-width: 760px;
+  --site-navbar-padding: 32px;
+  --section-heading-size: 56px;
+  --section-heading-leading: 1.12;
+  --section-label-size: 13px;
+  --section-body-size: 18px;
+  --section-body-leading: 1.7;
+  --subsection-heading-size: 32px;
+  --section-space: 56px;
+  --label-gap: 24px;
+  --copy-gap: 24px;
+  --content-gap: 48px;
+  --subsection-gap: 48px;
+  --reading-width: 760px;
+  --metadata-size: 12px;
+}
+.site-container {
+  width: calc(
+    clamp(
+        var(--site-navbar-min-width),
+        calc(76% - 2 * var(--site-navbar-padding) * 0.76),
+        var(--site-frame-width)
+      ) -
+      2 * var(--site-frame-inset)
+  );
+  max-width: var(--site-container-width);
+  margin-inline: auto;
+  min-width: 0;
+}
+.section-shell {
+  padding: var(--section-space) 0;
+}
+.section-shell .section-heading {
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--section-heading-size);
+  font-weight: 700;
+  line-height: var(--section-heading-leading);
+  letter-spacing: -0.035em;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+.section-shell .section-eyebrow {
+  margin: 0 0 var(--label-gap);
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: var(--section-label-size);
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.section-shell .section-body {
+  max-width: var(--reading-width);
+  margin: var(--copy-gap) 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--section-body-size);
+  font-weight: 500;
+  line-height: var(--section-body-leading);
+  text-wrap: pretty;
+}
+.section-body p + p {
+  margin-top: var(--copy-gap);
+}
+.section-shell .subsection-heading,
+.technology-stage-content h3 {
+  font-size: var(--subsection-heading-size);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+section[id]:not(.hero) {
+  scroll-margin-top: 128px;
+}
+html {
+  scroll-padding-top: 0;
+}
+
+/* Science keeps its existing open metric grid and internal separators. */
+.problem-evidence {
+  margin-top: var(--content-gap);
+}
+.problem-metric {
+  row-gap: 20px;
+}
+.problem-metric .problem-metric-value {
+  font-size: clamp(40px, 3.8vw, 56px);
+  line-height: 1.1;
+}
+.problem-metric-description {
+  font-size: 16px;
+  line-height: 1.65;
+}
+.problem-metric-source,
+.problem-metric .problem-metric-qualification {
+  font-size: var(--metadata-size);
+  font-weight: 500;
+  line-height: 1.6;
+}
+.problem-metric-source a {
+  white-space: nowrap;
+}
+
+/* Diagram layout and playback remain intact. */
+.technology-diagram {
+  margin-top: var(--content-gap);
+}
+.technology-diagram-support {
+  margin-top: 12px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.technology-panel-slot {
+  margin-top: var(--copy-gap);
+}
+.technology-stage-content p {
+  max-width: var(--reading-width);
+  margin-top: 16px;
+  font-size: var(--section-body-size);
+  font-weight: 500;
+  line-height: var(--section-body-leading);
+}
+.technology-step-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Equal portrait tracks keep names and roles aligned even when names wrap. */
+.about-layout {
+  gap: var(--content-gap);
+}
+.about-team {
+  padding-top: 24px;
+}
+.about-team .section-eyebrow {
+  margin-bottom: 0;
+}
+.founder-list {
+  margin-top: 24px;
+  gap: 0 28px;
+}
+.founder-name {
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.founder-role {
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+@supports (grid-template-rows: subgrid) {
+  .founder-entry {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+  }
+}
+
+/* Retain the bounded scrapbook, its image mounts and the recognition list. */
+.awards-composition {
+  margin-top: var(--content-gap);
+  gap: 40px;
+}
+.award-institution {
+  font-size: var(--metadata-size);
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+}
+.award-name {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.award-description {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+.awards-recognitions li {
+  padding-block: 24px;
+}
+.award-photo figcaption {
+  font-size: var(--metadata-size);
+  line-height: 1.6;
+}
+.supporter-strip {
+  margin-top: var(--subsection-gap);
+}
+.supporter-logo img {
+  object-fit: contain;
+}
+
+/* Contact and footer share the grid without changing their composition. */
+.contact-labels {
+  margin-bottom: var(--label-gap);
+}
+.contact-labels .section-eyebrow {
+  margin-bottom: 0;
+}
+.contact-secondary-label {
+  font-size: var(--metadata-size);
+  font-weight: 600;
+  line-height: 1.6;
+}
+.contact-email {
+  margin-top: 32px;
+}
+.contact-location {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.site-footer.site-container {
+  padding: 28px 0 40px;
+  font-size: var(--metadata-size);
+}
+.footer-details {
+  font-family: var(--font-sans);
+  font-size: var(--metadata-size);
+  font-weight: 500;
+  line-height: 1.6;
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  :root {
+    --section-heading-size: 48px;
+    --section-space: 48px;
+  }
+}
+@media (max-width: 1023px) {
+  :root {
+    --section-heading-size: 46px;
+    --section-space: 48px;
+    --subsection-heading-size: 30px;
+  }
+  /* Compact mobile frame: viewport minus 32px frame and 24px inner inset. */
+  .site-container {
+    width: calc(100vw - 56px);
+  }
+  .awards-composition {
+    gap: 32px;
+  }
+}
+@media (max-width: 640px) {
+  :root {
+    --section-heading-size: 36px;
+    --section-heading-leading: 1.15;
+    --section-body-size: 16px;
+    --section-body-leading: 1.65;
+    --subsection-heading-size: 24px;
+    --section-space: 36px;
+    --label-gap: 16px;
+    --copy-gap: 16px;
+    --content-gap: 32px;
+    --subsection-gap: 32px;
+  }
+  .problem-metric-description {
+    font-size: 15px;
+  }
+  .technology-stage-content p {
+    margin-top: 12px;
+  }
+  .technology-step-label {
+    font-size: 16px;
+  }
+  .founder-list {
+    gap: 32px;
+  }
+  .founder-entry {
+    display: block;
+    grid-row: auto;
+  }
+  .founder-name {
+    font-size: 20px;
+    margin-top: 16px;
+  }
+  .award-name {
+    font-size: 20px;
+  }
+  .award-description {
+    font-size: 15px;
+  }
+  .contact-email {
+    margin-top: 24px;
+  }
+  .site-footer.site-container {
+    gap: 24px;
+  }
+}
+@media (max-width: 359px) {
+  :root {
+    --section-heading-size: 34px;
+  }
+  .awards-scrapbook {
+    columns: 1;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .problem-evidence {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .problem-metric {
+    margin-top: 0;
+    padding: 28px 24px;
+  }
+  .problem-metric:nth-child(odd) {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .problem-metric:nth-child(even) {
+    padding-right: 0;
+  }
+  .problem-metric:nth-child(n + 3) {
+    border-top: 1px solid var(--problem-border);
+  }
+}

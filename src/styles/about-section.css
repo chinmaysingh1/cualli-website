@@ -1,0 +1,199 @@
+.about-section {
+  --about-accent: #588ca3;
+  --about-body: #405c6c;
+  --about-border: #d9e5ea;
+  --about-portrait: #eaf1f5;
+  padding: 80px 28px 88px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+:root.dark .about-section {
+  --about-accent: var(--soft-blue);
+  --about-body: var(--muted-foreground);
+  --about-border: var(--border);
+  --about-portrait: #0f1b28;
+}
+.about-layout {
+  display: grid;
+  gap: 44px;
+}
+.about-section .closing-eyebrow {
+  color: var(--about-body);
+  font-size: var(--section-label-size);
+  font-weight: 600;
+}
+.about-title {
+  max-width: 940px;
+  margin: 22px 0 24px;
+  font-size: var(--section-heading-size);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.about-title span {
+  color: var(--about-accent);
+}
+.about-section .about-mission .closing-description.section-body {
+  max-width: none;
+  width: 100%;
+  margin-inline: 0;
+  text-wrap: wrap;
+  color: var(--about-body);
+  font-size: 16.2px;
+  line-height: 1.75;
+}
+.about-team {
+  min-width: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--about-border);
+}
+.founder-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.founder-entry {
+  min-width: 0;
+}
+.founder-portrait {
+  display: block;
+  aspect-ratio: 3 / 4;
+  width: 80%;
+  max-width: 280px;
+  overflow: hidden;
+  background: var(--about-portrait);
+  border: 1px solid var(--about-border);
+}
+.founder-portrait:focus-visible {
+  outline: 2px solid var(--about-accent);
+  outline-offset: 5px;
+}
+.founder-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+.founder-name {
+  margin: 20px 0 0;
+  font-size: clamp(18px, 1.8vw, 21.6px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  overflow-wrap: break-word;
+  transition: color 300ms ease;
+}
+.founder-role {
+  margin: 8px 0 0;
+  color: var(--about-body);
+  font-size: 12.6px;
+  line-height: 1.6;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .founder-entry-with-photo:hover .founder-portrait img {
+    transform: scale(1.025);
+  }
+  .founder-entry-with-photo:hover .founder-name {
+    color: var(--about-accent);
+  }
+}
+@media (max-width: 640px) {
+  .about-section {
+    padding: 56px 20px 64px;
+  }
+  .about-layout {
+    gap: 32px;
+  }
+  .about-title {
+    margin-block: 20px;
+  }
+  .about-mission .closing-description {
+    font-size: 14.4px;
+    line-height: 1.75;
+  }
+  .founder-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .founder-name {
+    margin-top: 16px;
+    font-size: 21.6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .founder-portrait img,
+  .founder-name {
+    transition: none;
+  }
+}
+
+/* Centered founder gallery; introduction follows the shared left-aligned grid. */
+.about-section .about-mission {
+  min-width: 0;
+  text-align: left;
+}
+.about-section .about-title.section-heading {
+  max-width: 100%;
+  margin-inline: 0;
+  text-wrap: pretty;
+}
+.about-section .about-layout {
+  gap: 64px;
+}
+.about-section .about-team {
+  padding-top: 0;
+  border-top: 0;
+  text-align: center;
+}
+.about-section .founder-list {
+  width: 100%;
+  max-width: 1120px;
+  margin: 32px auto 0;
+  gap: 0 40px;
+}
+.about-section .founder-entry {
+  min-width: 0;
+  text-align: center;
+}
+.about-section .founder-portrait {
+  width: 80%;
+  max-width: 260px;
+  margin-inline: auto;
+  aspect-ratio: 3 / 4;
+}
+.about-section .founder-portrait img {
+  object-fit: cover;
+  object-position: center;
+}
+.about-section .founder-name {
+  margin: 18px 0 0;
+}
+.about-section .founder-role {
+  margin: 6px 0 0;
+}
+@media (min-width: 641px) and (max-width: 1023px) {
+  .about-section .founder-list {
+    column-gap: 24px;
+  }
+}
+@media (max-width: 640px) {
+  .about-section .about-layout {
+    gap: 48px;
+  }
+  .about-section .founder-list {
+    margin-top: 28px;
+    gap: 36px;
+  }
+  .about-section .founder-portrait {
+    max-width: 240px;
+  }
+  .about-section .founder-name {
+    margin-top: 16px;
+  }
+}
