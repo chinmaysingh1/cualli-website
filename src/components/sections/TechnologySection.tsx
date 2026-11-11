@@ -1,3 +1,4 @@
+import { TechnologyBacteria } from '@/components/ui/technology-bacteria'
 import { LivingFilterPathway } from '@/components/ui/living-filter-pathway'
 import '@/styles/technology-section.css'
 
@@ -39,17 +40,22 @@ export function TechnologySection() {
       <div className="technology-inner site-container">
         <header>
           <p className="technology-label section-eyebrow">OUR TECHNOLOGY</p>
-          <h2
-            id="technology-title"
-            className="technology-title section-heading font-display"
-          >
-            Meet the living filter.
-          </h2>
-          <p className="technology-description section-body">
-            Cualli is developing a daily probiotic capsule designed to capture
-            PFAS and microplastics in the gut, with the goal of limiting their
-            absorption or reabsorption.
-          </p>
+          <div className="technology-introduction">
+            <div className="technology-introduction-copy">
+              <h2
+                id="technology-title"
+                className="technology-title section-heading font-display"
+              >
+                Meet the living filter.
+              </h2>
+              <p className="technology-description section-body">
+                Cualli is developing a daily probiotic capsule designed to capture
+                PFAS and microplastics in the gut, with the goal of limiting their
+                absorption or reabsorption.
+              </p>
+            </div>
+            <TechnologyBacteria />
+          </div>
         </header>
         <div
           className="technology-diagram"

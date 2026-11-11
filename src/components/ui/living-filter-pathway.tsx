@@ -13,7 +13,11 @@ import {
   useInView,
   useMotionValue,
   useReducedMotion,
+  useTransform,
+  type MotionValue,
 } from 'motion/react'
+import { useTheme } from '@/hooks/use-theme'
+import { drawBacterium, drawBubbles } from '@/lib/bacteria-canvas'
 
 type ProcessStage = {
   title: string
@@ -163,7 +167,12 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
                 }}
                 transition={{ duration: reducedMotion ? 0 : 0.3 }}
               >
-                <StageIllustration stage={stage.value} />
+                <StageIllustration
+                  stage={stage.value}
+                  progress={progress}
+                  active={activeIndex === index}
+                  staticFrame={Boolean(reducedMotion || paused)}
+                />
               </motion.span>
               <span className="technology-box-title">{stage.headline}</span>
               <span
@@ -183,23 +192,11 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
               >
                 <path d="M0 6H96M91 2L96 6L91 10" />
               </svg>
-              <svg
-                className={`technology-bacteria-transit technology-bacteria-transit-${stage.value}`}
-                viewBox="0 0 60 28"
-                aria-hidden="true"
-                focusable="false"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <g className="technology-bacteria-traveler">
-                  <g transform="translate(29 14) scale(.75)">
-                    <Bacterium bound={stage.value === 'capture'} />
-                  </g>
-                </g>
-              </svg>
+              <BacteriaTransfer
+                stage={stage.value}
+                progress={progress}
+                active={activeIndex === index && !paused && !reducedMotion}
+              />
               </>
             )}
           </li>
@@ -240,24 +237,126 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
 }
 
 // Original conceptual illustrations, not validated biological models.
-function Bacterium({ bound = false }: { bound?: boolean }) {
+function Bacterium({ bound = false, phase }: {
+  bound?: boolean
+  phase?: MotionValue<number>
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { theme } = useTheme()
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
+    if (!canvas || !context) return
+    const c = context
+    // Reuse the hero artwork at twice the SVG's logical resolution. The existing
+    // stage MotionValue drives repainting; no extra animation loops or timers.
+    const ratio = Math.min(window.devicePixelRatio || 1, 3) * 2
+    canvas.width = Math.round(52 * ratio)
+    canvas.height = Math.round(44 * ratio)
+    function draw() {
+      const position = phase?.get() ?? 0.68
+      c.setTransform(ratio, 0, 0, ratio, 0, 0)
+      c.clearRect(0, 0, 52, 44)
+      c.save()
+      c.translate(26, 22)
+      c.rotate(Math.sin(position * Math.PI * 2) * 0.12)
+      c.scale(0.36, 0.36)
+      drawBubbles(c, bound ? 1 : 0, theme === 'dark', position * 8 + 1, true)
+      drawBacterium(c, 0, theme === 'dark')
+      if (bound) {
+        c.fillStyle = theme === 'dark' ? '#C5E7EF' : '#477B94'
+        for (const [x, y] of [[-14, -21], [20, 21]]) {
+          c.beginPath()
+          c.arc(x, y, 4.5, 0, Math.PI * 2)
+          c.fill()
+        }
+        c.fillRect(28, -22, 7, 7)
+      }
+      c.restore()
+    }
+    draw()
+    return phase?.on('change', draw)
+  }, [bound, phase, theme])
+
   return (
-    <g className="technology-bacterium">
-      <rect x="-13" y="-6" width="26" height="12" rx="6" fill="var(--background)" />
-      <path d="M-8-6L-10-9M0-6V-9M8-6L10-9M-8 6L-10 9M0 6V9M8 6L10 9M-13 0C-18-4-17 5-22 1" />
-      <path d="M-7 0Q-3-4 0 0T7 0" opacity=".7" />
-      {bound && (
-        <g className="technology-bound-particles" fill="currentColor" strokeWidth="1">
-          <circle cx="-6" cy="-9" r="2" />
-          <circle cx="8" cy="8" r="1.8" />
-          <path d="M12-8L15-6L13-3L10-5Z" />
-        </g>
-      )}
-    </g>
+    <foreignObject x="-26" y="-22" width="52" height="44">
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: 52, height: 44, pointerEvents: 'none' }}
+        aria-hidden="true"
+      />
+    </foreignObject>
   )
 }
 
-function StageIllustration({ stage }: { stage: string }) {
+type IllustrationProps = {
+  stage: string
+  progress: MotionValue<number>
+  active: boolean
+  staticFrame?: boolean
+}
+
+function BacteriaTransfer({ stage, progress, active }: IllustrationProps) {
+  const x = useTransform(progress, [0, 0.7, 1], [-38, -38, 38])
+  const opacity = useTransform(progress, (value) => {
+    if (!active || value < 0.7) return 0
+    return Math.min(1, (value - 0.7) / 0.07, (1 - value) / 0.07)
+  })
+  return (
+    <svg
+      className={`technology-bacteria-transit technology-bacteria-transit-${stage}`}
+      viewBox="0 0 60 28"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <motion.g style={{ x, opacity }}>
+        <g transform="translate(29 14) scale(.75)">
+          <Bacterium bound={stage === 'capture'} phase={progress} />
+        </g>
+      </motion.g>
+    </svg>
+  )
+}
+
+function CaptureParticle({ phase, x, y, square = false }: {
+  phase: MotionValue<number>
+  x: number
+  y: number
+  square?: boolean
+}) {
+  const offsetX = useTransform(phase, [0, 0.2, 0.65, 1], [x, x * 0.85, 0, 0])
+  const offsetY = useTransform(phase, [0, 0.2, 0.65, 1], [y, y * 0.85, 0, 0])
+  const opacity = useTransform(phase, [0, 0.3, 0.65, 1], [0.45, 0.8, 1, 1])
+  return (
+    <motion.g style={{ x: offsetX, y: offsetY, opacity }}>
+      {square ? <path d="M-3-3H3V3H-3Z" /> : <circle r="2.8" />}
+    </motion.g>
+  )
+}
+
+function StageIllustration({ stage, progress, active, staticFrame }: IllustrationProps) {
+  // The existing stage clock drives every illustration and connector together.
+  // Inactive/manual/reduced-motion views retain a complete, readable static state.
+  const phase = useTransform(progress, (value) => {
+    const position = staticFrame || !active ? 0.68 : value
+    return position * position * (3 - 2 * position)
+  })
+  const capY = useTransform(phase, [0, 0.22, 1], [0, -9, -9])
+  const emergeX = useTransform(phase, [0, 0.18, 0.6, 1], [-17, -12, 0, 2])
+  const emergeY = useTransform(phase, [0, 0.6, 1], [5, 0, -1])
+  const emergeOpacity = useTransform(phase, [0, 0.2, 0.5, 1], [0.2, 0.5, 1, 1])
+  const settleX = useTransform(phase, [0, 0.5, 0.75, 1], [-24, -2, 1, 0])
+  const settleY = useTransform(phase, [0, 0.5, 0.75, 1], [-10, 2, -1, 0])
+  const settleRotate = useTransform(phase, [0, 0.55, 1], [-12, 3, 0])
+  const exitX = useTransform(phase, [0, 0.3, 0.9, 1], [-18, -8, 22, 26])
+  const exitY = useTransform(phase, [0, 0.5, 1], [2, -2, 0])
+  const exitOpacity = useTransform(phase, [0, 0.12, 0.85, 1], [0.6, 1, 1, 0])
   return (
     <svg
       viewBox="0 0 120 108"
@@ -272,16 +371,16 @@ function StageIllustration({ stage }: { stage: string }) {
       {stage === 'take' && (
         <>
           <g transform="rotate(28 52 50)">
-            <g className="technology-capsule-cap">
+            <motion.g style={{ y: capY }}>
               <path d="M34 49V30a18 18 0 0 1 36 0V49ZM40 31C40 24 45 19 51 19" />
-            </g>
+            </motion.g>
             <path d="M34 53H70V73a18 18 0 0 1-36 0Z" />
           </g>
           <g transform="translate(81 52) rotate(20)">
-            <g className="technology-bacteria-emerge"><Bacterium /></g>
+            <motion.g style={{ x: emergeX, y: emergeY, opacity: emergeOpacity }}><Bacterium phase={phase} /></motion.g>
           </g>
           <g transform="translate(89 79) rotate(-12) scale(.75)">
-            <g className="technology-bacteria-emerge technology-bacteria-companion"><Bacterium /></g>
+            <motion.g style={{ x: emergeX, opacity: emergeOpacity }}><Bacterium phase={phase} /></motion.g>
           </g>
         </>
       )}
@@ -293,18 +392,18 @@ function StageIllustration({ stage }: { stage: string }) {
             <path d="M31 48C22 50 22 58 27 62C18 70 23 85 32 87C39 100 51 97 57 92H67" opacity=".5" />
           </g>
           <g transform="translate(61 58) scale(.85)">
-            <g className="technology-bacteria-settle"><Bacterium /></g>
+            <motion.g style={{ x: settleX, y: settleY, rotate: settleRotate }}><Bacterium phase={phase} /></motion.g>
           </g>
-          <g transform="translate(56 82) scale(.65)"><Bacterium /></g>
+          <g transform="translate(56 82) scale(.65)"><Bacterium phase={phase} /></g>
         </>
       )}
       {stage === 'capture' && (
         <>
-          <g transform="translate(61 55) rotate(-18) scale(1.65)"><Bacterium /></g>
+          <g transform="translate(61 55) rotate(-18) scale(1.65)"><Bacterium phase={phase} /></g>
           <g className="technology-capture-particles" fill="currentColor">
-            <circle className="technology-contaminant technology-contaminant-one" cx="44" cy="37" r="3" />
-            <circle className="technology-contaminant technology-contaminant-two" cx="79" cy="67" r="2.7" />
-            <path className="technology-contaminant technology-contaminant-three" d="M76 28L81 32L77 37L72 33Z" />
+            <g transform="translate(44 37)"><CaptureParticle phase={phase} x={-19} y={-15} /></g>
+            <g transform="translate(79 67)"><CaptureParticle phase={phase} x={21} y={15} /></g>
+            <g transform="translate(77 32)"><CaptureParticle phase={phase} x={20} y={-18} square /></g>
           </g>
         </>
       )}
@@ -314,7 +413,7 @@ function StageIllustration({ stage }: { stage: string }) {
             <path d="M16 54H104M95 45L104 54L95 63M23 84H90M84 79L90 84L84 89" />
           </g>
           <g transform="translate(61 45) scale(1.15)">
-            <g className="technology-bacteria-exit"><Bacterium bound /></g>
+            <motion.g style={{ x: exitX, y: exitY, opacity: exitOpacity }}><Bacterium bound phase={phase} /></motion.g>
           </g>
         </>
       )}

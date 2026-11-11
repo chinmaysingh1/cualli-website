@@ -340,7 +340,7 @@
   text-align: center;
 }
 
-/* Schematic bacteria share an eight-second sequence inside the existing figure. */
+/* Illustrations and bacteria transfers share the existing four-second stage clock. */
 .technology-step-visual {
   width: 100%;
   height: 80px;
@@ -353,21 +353,6 @@
 .technology-capture-particles {
   color: var(--technology-accent);
 }
-.technology-biology-take,
-.technology-bacteria-transit-take {
-  --biology-delay: 0s;
-}
-.technology-biology-reach,
-.technology-bacteria-transit-reach {
-  --biology-delay: -6s;
-}
-.technology-biology-capture,
-.technology-bacteria-transit-capture {
-  --biology-delay: -4s;
-}
-.technology-biology-exit {
-  --biology-delay: -2s;
-}
 .technology-bacteria-transit {
   position: absolute;
   top: calc(var(--metadata-size) * 1.6 + 58px);
@@ -377,79 +362,37 @@
   color: var(--technology-accent);
   pointer-events: none;
   overflow: hidden;
-  opacity: 0;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .technology-capsule-cap {
-    animation: technology-capsule-release 8s ease-in-out infinite;
-  }
-  .technology-bacteria-emerge {
-    animation: technology-bacteria-emerge 8s ease-in-out infinite;
-  }
-  .technology-bacteria-companion {
-    animation-delay: -0.3s;
-  }
-  .technology-bacteria-settle {
-    animation: technology-bacteria-settle 8s ease-in-out infinite;
-    animation-delay: var(--biology-delay);
-  }
-  .technology-contaminant {
-    animation: technology-contaminant-bind 8s ease-in-out infinite;
-    animation-delay: var(--biology-delay);
-  }
-  .technology-contaminant-one { --particle-x: -18px; --particle-y: -13px; }
-  .technology-contaminant-two { --particle-x: 20px; --particle-y: 14px; }
-  .technology-contaminant-three { --particle-x: 18px; --particle-y: -16px; }
-  .technology-bacteria-exit {
-    animation: technology-bacteria-exit 8s ease-in-out infinite;
-    animation-delay: var(--biology-delay);
-  }
-  .technology-bacteria-traveler {
-    animation: technology-bacteria-transfer 8s linear infinite;
-    animation-delay: var(--biology-delay);
-  }
-  .technology-bacteria-transit { opacity: 1; }
-  .technology-flow[data-bacteria-running='false'] .technology-biology *,
-  .technology-flow[data-bacteria-running='false'] .technology-bacteria-traveler {
-    animation-play-state: paused;
-  }
-}
-@keyframes technology-capsule-release {
-  0%, 25%, 100% { transform: translateY(0); }
-  8%, 18% { transform: translateY(-6px); }
-}
-@keyframes technology-bacteria-emerge {
-  0%, 100% { transform: translate(-14px, -5px); opacity: .35; }
-  8% { opacity: .7; }
-  20%, 85% { transform: translate(0, 0); opacity: 1; }
-  95% { transform: translate(0, 0); opacity: .35; }
-}
-@keyframes technology-bacteria-settle {
-  0%, 100% { transform: translate(-17px, -8px) rotate(-6deg); opacity: .35; }
-  8%, 85% { transform: translate(0, 0) rotate(0); opacity: 1; }
-  95% { transform: translate(0, 0); opacity: .35; }
-}
-@keyframes technology-contaminant-bind {
-  0%, 100% { transform: translate(var(--particle-x), var(--particle-y)); opacity: .35; }
-  18%, 85% { transform: translate(0, 0); opacity: 1; }
-  95% { transform: translate(0, 0); opacity: .35; }
-}
-@keyframes technology-bacteria-exit {
-  0%, 100% { transform: translate(-16px, 0); opacity: .4; }
-  5% { opacity: 1; }
-  22%, 85% { transform: translate(20px, 0); opacity: 1; }
-  95% { transform: translate(20px, 0); opacity: .4; }
-}
-@keyframes technology-bacteria-transfer {
-  0%, 16% { transform: translateX(-25px); opacity: 0; }
-  18% { opacity: 1; }
-  25% { transform: translateX(25px); opacity: 0; }
-  26%, 100% { transform: translateX(25px); opacity: 0; }
 }
 @media (max-width: 767px) {
   .technology-bacteria-transit {
     top: calc(100% + 4px);
     left: calc(50% - 18px);
     transform: rotate(90deg);
+  }
+}
+
+/* Two hero-style organisms accompany the introduction without covering copy. */
+.technology-introduction {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  align-items: center;
+  column-gap: 28px;
+}
+.technology-introduction-copy { min-width: 0; }
+.technology-intro-bacteria {
+  display: block;
+  width: 180px;
+  height: 144px;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .technology-introduction {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 8px;
+  }
+  .technology-intro-bacteria {
+    width: 150px;
+    height: 120px;
+    justify-self: end;
   }
 }
