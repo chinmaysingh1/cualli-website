@@ -80,14 +80,17 @@ export function WavyBackground({
           : w < 1024
             ? [0.14, 0.5, 0.86][index]
             : organism.start
-        // A shared current preserves separation over time. Small speed variations
-        // add organic drift without letting neighboring organisms bunch together.
-        const drift = organismTime * 0.0026 +
-          (Math.sin(organismTime * 0.035 + index) - Math.sin(index)) * 0.006
+        // A faster shared current keeps the organisms spread out, while bounded
+        // swimming motions make them feel active without changing the wave field.
+        const drift = organismTime * 0.0095 +
+          (Math.sin(organismTime * 0.45 + index) - Math.sin(index)) * 0.009
         const phase = (start + drift) % 1
         const x = phase * w
-        const y = waveY(x, organism.band)
-        const radius = size * organism.scale * 0.6
+        const swimRange = mobile ? 7 : 12
+        const swim = Math.sin(organismTime * 0.72 + index * 1.7) * swimRange +
+          Math.sin(organismTime * 0.31 + index) * swimRange * 0.35
+        const y = waveY(x, organism.band) + swim
+        const radius = size * organism.scale * 0.95
         // Fade out rather than leave the current or pass behind hero controls.
         const clearance = Math.min(y - radius - safeTop, visibleBottom - y - radius)
         const alpha = Math.min(1, Math.max(0, clearance / 20), phase / 0.05, (1 - phase) / 0.05)
@@ -95,7 +98,9 @@ export function WavyBackground({
         const slope = (waveY(x + 4, organism.band) - waveY(x - 4, organism.band)) / 8
         c.save()
         c.translate(x, y)
-        c.rotate(Math.atan(slope) + organism.tilt * Math.PI / 180)
+        // Alternate slow full rotations, with slightly varied speeds per cell.
+        const spin = organismTime * (0.36 + index % 3 * 0.06) * (index % 2 ? -1 : 1)
+        c.rotate(Math.atan(slope) + organism.tilt * Math.PI / 180 + spin)
         c.scale(size * organism.scale / 80, size * organism.scale / 80)
         c.globalAlpha = alpha * (dark ? 0.76 : 0.68)
         drawBubbles(c, index, dark, organismTime)
@@ -304,20 +309,20 @@ function drawBacterium(c: CanvasRenderingContext2D, variant: number, dark: boole
 
 function drawBubbles(c: CanvasRenderingContext2D, variant: number, dark: boolean, time: number) {
   c.save()
-  c.strokeStyle = dark ? '#B8D2D8' : '#588CA3'
+  c.strokeStyle = dark ? '#C5E7EF' : '#477B94'
   c.fillStyle = dark ? '#B8D2D8' : '#DDEEF0'
-  c.lineWidth = 1
-  const bubbles = [[-51, -24, 4], [48, -21, 5.5], [22, 32, 3], [-21, -32, 2.5]]
+  c.lineWidth = 1.6
+  const bubbles = [[-51, -24, 6.5], [48, -21, 8], [22, 32, 5], [-21, -32, 4.5]]
   bubbles.forEach(([x, y, radius], index) => {
     // Local circulation stays attached to the organism's wave position/tangent.
     const phase = (time * 0.08 + index * 0.23 + variant * 0.17) % 1
     const lift = (phase - 0.5) * 10
     c.save()
-    c.globalAlpha *= 0.45 + Math.sin(phase * Math.PI) * 0.3
+    c.globalAlpha *= 0.82 + Math.sin(phase * Math.PI) * 0.18
     c.beginPath()
     c.arc(x, y - lift, radius, 0, Math.PI * 2)
     c.save()
-    c.globalAlpha *= 0.16
+    c.globalAlpha *= 0.24
     c.fill()
     c.restore()
     c.stroke()
