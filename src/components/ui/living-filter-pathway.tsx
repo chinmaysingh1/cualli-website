@@ -16,6 +16,7 @@ import {
   useTransform,
   type MotionValue,
 } from 'motion/react'
+import { BiologicalJourney } from '@/components/ui/biological-journey'
 import { useTheme } from '@/hooks/use-theme'
 import { drawBacterium, drawBubbles } from '@/lib/bacteria-canvas'
 
@@ -25,11 +26,13 @@ type ProcessStage = {
   headline: string
   description: string
 }
-const STAGE_SECONDS = 4
+// Four phases on one uninterrupted 8.4-second timeline.
+const STAGE_SECONDS = 2.1
 
 export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[] }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [journeyReady, setJourneyReady] = useState(false)
   const [playbackRevision, setPlaybackRevision] = useState(0)
   const [documentVisible, setDocumentVisible] = useState(
     () =>
@@ -64,16 +67,25 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
     if (!running) return
     let cancelled = false
     const generation = ++generationRef.current
-    const remaining = STAGE_SECONDS * (1 - progress.get())
+    const remaining = STAGE_SECONDS * (stages.length - progress.get())
+    let currentIndex = Math.floor(progress.get())
     // One clock drives each stage change: no interval drift,
     // overlapping timers, or separate progress and content schedules.
-    const playback = animate(progress, 1, {
+    const playback = animate(progress, stages.length, {
       duration: remaining,
       ease: 'linear',
+      onUpdate: (value) => {
+        const index = Math.min(stages.length - 1, Math.floor(value))
+        if (index !== currentIndex) {
+          currentIndex = index
+          setActiveIndex(index)
+        }
+      },
       onComplete: () => {
         if (cancelled || generation !== generationRef.current) return
         progress.set(0)
-        setActiveIndex((current) => (current + 1) % stages.length)
+        setActiveIndex(0)
+        setPlaybackRevision((current) => current + 1)
       },
     })
     animationRef.current = playback
@@ -82,20 +94,21 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
       playback.stop()
       animationRef.current = null
     }
-  }, [activeIndex, playbackRevision, running, progress, stages.length])
+  }, [playbackRevision, running, progress, stages.length])
 
   function selectStage(index: number) {
     // Invalidate pending completions before changing selection or restarting.
     generationRef.current += 1
     animationRef.current?.stop()
-    progress.set(0)
     if (index === activeIndex && !reducedMotion) {
+      progress.set(index)
       setPaused(false)
       // Also restart when the active stage is selected during playback.
       setPlaybackRevision((current) => current + 1)
     } else {
       setPaused(true)
       setActiveIndex(index)
+      progress.set(index + 0.58)
     }
   }
 
@@ -170,7 +183,8 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
                 <StageIllustration
                   stage={stage.value}
                   progress={progress}
-                  active={activeIndex === index}
+                  stageIndex={index}
+                  showBacteria={!journeyReady}
                   staticFrame={Boolean(reducedMotion || paused)}
                 />
               </motion.span>
@@ -183,7 +197,6 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
               </span>
             </button>
             {index < stages.length - 1 && (
-              <>
               <svg
                 className="technology-connector"
                 viewBox="0 0 100 12"
@@ -192,16 +205,16 @@ export function LivingFilterPathway({ stages }: { stages: readonly ProcessStage[
               >
                 <path d="M0 6H96M91 2L96 6L91 10" />
               </svg>
-              <BacteriaTransfer
-                stage={stage.value}
-                progress={progress}
-                active={activeIndex === index && !paused && !reducedMotion}
-              />
-              </>
             )}
           </li>
         ))}
       </ol>
+      <BiologicalJourney
+        containerRef={containerRef}
+        timeline={progress}
+        enabled={reducedMotion === false}
+        onReady={setJourneyReady}
+      />
       <span id={`${id}-playback-status`} role="status" className="sr-only">
         {reducedMotion
           ? 'Automatic playback disabled for reduced motion.'
@@ -293,35 +306,9 @@ function Bacterium({ bound = false, phase }: {
 type IllustrationProps = {
   stage: string
   progress: MotionValue<number>
-  active: boolean
+  stageIndex: number
+  showBacteria: boolean
   staticFrame?: boolean
-}
-
-function BacteriaTransfer({ stage, progress, active }: IllustrationProps) {
-  const x = useTransform(progress, [0, 0.7, 1], [-38, -38, 38])
-  const opacity = useTransform(progress, (value) => {
-    if (!active || value < 0.7) return 0
-    return Math.min(1, (value - 0.7) / 0.07, (1 - value) / 0.07)
-  })
-  return (
-    <svg
-      className={`technology-bacteria-transit technology-bacteria-transit-${stage}`}
-      viewBox="0 0 60 28"
-      aria-hidden="true"
-      focusable="false"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <motion.g style={{ x, opacity }}>
-        <g transform="translate(29 14) scale(.75)">
-          <Bacterium bound={stage === 'capture'} phase={progress} />
-        </g>
-      </motion.g>
-    </svg>
-  )
 }
 
 function CaptureParticle({ phase, x, y, square = false }: {
@@ -340,12 +327,21 @@ function CaptureParticle({ phase, x, y, square = false }: {
   )
 }
 
-function StageIllustration({ stage, progress, active, staticFrame }: IllustrationProps) {
+function StageIllustration({ stage, progress, stageIndex, showBacteria, staticFrame }: IllustrationProps) {
   // The existing stage clock drives every illustration and connector together.
   // Inactive/manual/reduced-motion views retain a complete, readable static state.
   const phase = useTransform(progress, (value) => {
-    const position = staticFrame || !active ? 0.68 : value
+    const position = staticFrame ? 0.68 : Math.max(0, Math.min(1, value - stageIndex))
     return position * position * (3 - 2 * position)
+  })
+  // Keep a schematic pollutant cluster visible between visits from the moving
+  // bacteria. Fade it away during arrival/capture so the scene stays uncluttered.
+  const captureIdleOpacity = useTransform(progress, (value) => {
+    if (showBacteria) return 0
+    if (value < 1.85 || value >= 3.1) return 1
+    if (value < 2) return 1 - (value - 1.85) / 0.15
+    if (value > 2.9) return (value - 2.9) / 0.2
+    return 0
   })
   const capY = useTransform(phase, [0, 0.22, 1], [0, -9, -9])
   const emergeX = useTransform(phase, [0, 0.18, 0.6, 1], [-17, -12, 0, 2])
@@ -377,10 +373,10 @@ function StageIllustration({ stage, progress, active, staticFrame }: Illustratio
             <path d="M34 53H70V73a18 18 0 0 1-36 0Z" />
           </g>
           <g transform="translate(81 52) rotate(20)">
-            <motion.g style={{ x: emergeX, y: emergeY, opacity: emergeOpacity }}><Bacterium phase={phase} /></motion.g>
+            <motion.g style={{ x: emergeX, y: emergeY, opacity: emergeOpacity }}>{showBacteria && <Bacterium phase={phase} />}</motion.g>
           </g>
           <g transform="translate(89 79) rotate(-12) scale(.75)">
-            <motion.g style={{ x: emergeX, opacity: emergeOpacity }}><Bacterium phase={phase} /></motion.g>
+            <motion.g style={{ x: emergeX, opacity: emergeOpacity }}>{showBacteria && <Bacterium phase={phase} />}</motion.g>
           </g>
         </>
       )}
@@ -392,15 +388,24 @@ function StageIllustration({ stage, progress, active, staticFrame }: Illustratio
             <path d="M31 48C22 50 22 58 27 62C18 70 23 85 32 87C39 100 51 97 57 92H67" opacity=".5" />
           </g>
           <g transform="translate(61 58) scale(.85)">
-            <motion.g style={{ x: settleX, y: settleY, rotate: settleRotate }}><Bacterium phase={phase} /></motion.g>
+            <motion.g style={{ x: settleX, y: settleY, rotate: settleRotate }}>{showBacteria && <Bacterium phase={phase} />}</motion.g>
           </g>
-          <g transform="translate(56 82) scale(.65)"><Bacterium phase={phase} /></g>
+          <g transform="translate(56 82) scale(.65)">{showBacteria && <Bacterium phase={phase} />}</g>
         </>
       )}
       {stage === 'capture' && (
         <>
-          <g transform="translate(61 55) rotate(-18) scale(1.65)"><Bacterium phase={phase} /></g>
-          <g className="technology-capture-particles" fill="currentColor">
+          <motion.g style={{ opacity: captureIdleOpacity }}>
+            <g stroke="currentColor" strokeWidth="1.7">
+              <circle cx="43" cy="36" r="5" />
+              <circle cx="76" cy="47" r="4" />
+              <circle cx="47" cy="75" r="3.5" />
+              <path d="M62 66L70 62L77 69L70 77L62 73Z" />
+              <path d="M57 47L63 52L59 59L52 55Z" fill="currentColor" fillOpacity=".12" />
+            </g>
+          </motion.g>
+          <g transform="translate(61 55) rotate(-18) scale(1.65)">{showBacteria && <Bacterium phase={phase} />}</g>
+          <g className="technology-capture-particles" fill="currentColor" visibility={showBacteria ? 'visible' : 'hidden'}>
             <g transform="translate(44 37)"><CaptureParticle phase={phase} x={-19} y={-15} /></g>
             <g transform="translate(79 67)"><CaptureParticle phase={phase} x={21} y={15} /></g>
             <g transform="translate(77 32)"><CaptureParticle phase={phase} x={20} y={-18} square /></g>
@@ -413,7 +418,7 @@ function StageIllustration({ stage, progress, active, staticFrame }: Illustratio
             <path d="M16 54H104M95 45L104 54L95 63M23 84H90M84 79L90 84L84 89" />
           </g>
           <g transform="translate(61 45) scale(1.15)">
-            <motion.g style={{ x: exitX, y: exitY, opacity: exitOpacity }}><Bacterium bound phase={phase} /></motion.g>
+            <motion.g style={{ x: exitX, y: exitY, opacity: exitOpacity }}>{showBacteria && <Bacterium bound phase={phase} />}</motion.g>
           </g>
         </>
       )}
