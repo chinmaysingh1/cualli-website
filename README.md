@@ -1,54 +1,60 @@
-# Cualli
+# Cualli, LLC — Official Website
 
-A static, single-page React + TypeScript website built with Vite, Tailwind CSS v4, shadcn/ui, and the official Aceternity Resizable Navbar and Wavy Background components. The initial scope is the navbar and hero. Science, Technology, Research, About, and Contact are intentionally labeled placeholders; no research results or company details have been invented.
+The official website for **Cualli**, a synthetic-biology company building autonomous probiotics that sequester PFAS ("forever chemicals") in the gut before they enter the bloodstream. Derived from the award-winning 2025 UNC iGEM project, our flagship therapeutic uses an engineered _Escherichia coli_ Nissle 1917 (EcN) strain.
 
-## Local development
+> **Filter the Forever.**
 
-Use Node.js 22.12+ (or another version supported by Vite 8) and npm. No environment variables, backend, or external services are required.
+## 🧬 Tech Stack
 
-```sh
-npm ci
-npm run dev
+- **Framework:** Next.js (App Router)
+- **Styling:** Tailwind CSS — custom design tokens for heavy blurs & bioluminescent gradients
+- **Animation:** Framer Motion — scroll-triggered reveals and fluid hover tension
+- **Fonts:** `next/font` (Inter)
+- **Output:** Static export (`output: "export"`) — deploys to GitHub Pages _or_ Vercel
+
+## 🎨 Design — "Liquid Glass"
+
+A portal into the future of synthetic biology: fluid, refractive, and alive.
+
+- **Abyssal black** background with slow-moving cyan/emerald gradient meshes drifting underneath (`components/BackgroundMesh.js`).
+- **Liquid-glass surfaces** — heavy `backdrop-blur`, ultra-thin `border-white/10`, generous rounding. See the `.glass` / `.glass-strong` utilities in `app/globals.css`.
+- **Floating pill navbar** with an animated active indicator.
+- Design tokens (colors, blur scale, gradients, motion keyframes) live in `tailwind.config.js`.
+
+## 📂 Structure
+
+```
+app/
+  layout.js        Root layout — fonts, navbar, footer, background mesh, metadata
+  page.js          Home — hero ("Filter the Forever") + value props + CTA
+  science/page.js  Science — EcN chassis + looping video window
+  about/page.js    About — founders grid
+  contact/page.js  Contact — server wrapper for the form
+components/
+  Navbar, Footer, BackgroundMesh, Reveal, GlassCard, CTAButton,
+  VideoWindow      Continuously-looping, controls-free "living window"
+  ContactForm      Validated form (First/Last name, Work Email, Message)
+public/            Logo, founder headshots, Cualli.mp4, CNAME
 ```
 
-Open the local URL printed by Vite.
+## 📨 Contact form
 
-## Validation and production
+The form validates client-side and submits to an optional endpoint. Set
+`NEXT_PUBLIC_CONTACT_ENDPOINT` (e.g. a Formspree URL or serverless function) to
+enable network submission. **Without it, the form falls back to opening the
+visitor's mail client** via `mailto:` (update `FALLBACK_EMAIL` in
+`components/ContactForm.js`).
 
-```sh
-npm run lint
-npm run typecheck
-npm run format:check
-npm run build
-npm run preview
+## 🚀 Local development
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # static export to ./out
 ```
 
-`npm run format` applies Prettier. Production output is written to `dist/`. Quicksand is self-hosted through `@fontsource-variable/quicksand`; only its Latin variable font (weights 300–700) is loaded. All website text uses Quicksand.
+## 🌐 Deployment
 
-
-## Project structure
-
-- `src/components/layout/`: responsive navigation and footer.
-- `src/components/sections/Hero.tsx`: supplied hero copy and calls to action.
-- `src/components/ui/`: locally owned shadcn and Aceternity components.
-- `src/constants/`: navigation destinations and wave palette.
-- `src/styles/globals.css`: brand tokens, typography, and responsive styling.
-- `src/App.tsx`: page structure and future section anchors.
-
-The mobile menu supports keyboard buttons, Escape with focus restoration, closing on link selection or outside pointer interaction, and closing at the desktop breakpoint. Focus indicators, a skip link, reduced-motion preferences, and native anchor scrolling are supported. The canvas caps device pixel ratio, renders at up to 30 fps, pauses offscreen/in hidden tabs, and cleans up observers and animation frames. A static SVG wave fallback remains if canvas is unavailable.
-
-## Component sources
-
-Installed with the official CLI:
-
-```sh
-npx shadcn@latest init -d
-npx shadcn@latest add @aceternity/resizable-navbar @aceternity/wavy-background
-```
-
-- [Aceternity Resizable Navbar](https://ui.aceternity.com/components/resizable-navbar)
-- [Aceternity Wavy Background](https://ui.aceternity.com/components/wavy-background)
-- [shadcn Vite installation](https://ui.shadcn.com/docs/installation/vite)
-- [Tailwind Vite installation](https://tailwindcss.com/docs/installation/using-vite)
-
-The installed navbar retains Aceternity's scroll threshold, child state propagation, Motion spring resizing, and mobile components. Adaptations provide the brand styling and accessible Lucide menu toggle. The installed Wavy Background retains its simplex-noise paths and canvas rendering, with typed props, container sizing, reduced-motion support, and lifecycle fixes. TypeScript 6 is used because the current typescript-eslint release supports versions below 6.1; the Vite starter's TypeScript 7 is outside that range.
+`npm run build` emits a fully static site to `out/` (the `CNAME` for
+`cualli.bio` is included for GitHub Pages). Deploy `out/` to GitHub Pages, or
+connect the repo to Vercel for zero-config builds.
